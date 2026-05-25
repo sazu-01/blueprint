@@ -1,26 +1,103 @@
-
-const fieldClassName =
-"h-12 w-full rounded-md border border-slate-300 bg-white px-4 text-[15px] text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-primary  focus:ring-primary/15";
+"use client";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
+const apiBaseUrl = (
+  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000"
+).replace(/\/$/, "");
+
+const fieldClassName =
+  "h-12 w-full rounded-md border border-slate-300 bg-white px-4 text-[15px] text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-primary focus:ring-primary/15";
 
 const UserRegisterPage = () => {
+  const router = useRouter(); 
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const [message, setMessage] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+
+    setFormData((currentFormData) => ({
+      ...currentFormData,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setMessage(null);
+
+    const email = formData.email.trim();
+    const password = formData.password;
+
+    if (!email || !password) {
+      setMessage({
+        type: "error",
+        text: "Email and password are required.",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch(`${apiBaseUrl}/api/auth/register/user`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data.message || "OTP request failed. Please try again.");
+      }
+
+      sessionStorage.setItem("pendingRegistrationEmail", email);
+      router.push(`/register/user/activate?email=${encodeURIComponent(email)}`);
+    } catch (error) {
+      setMessage({
+        type: "error",
+        text: error.message || "OTP request failed. Please try again.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#f0f2f5] px-4 py-10 text-slate-900">
       <section className="grid w-full max-w-5xl items-center gap-10 md:grid-cols-[1fr_420px] md:gap-14">
         <div className="mx-auto max-w-xl text-center md:mx-0 md:text-left xsm:hidden">
-          <Image src="/reg_pg_img.png" alt="register page image" width={500} height={500} loading="eager" />
+          <Image
+            src="/reg_pg_img.png"
+            alt="register page image"
+            width={500}
+            height={500}
+            loading="eager"
+          />
         </div>
 
         <div className="mx-auto w-full max-w-[420px]">
-          <form className="rounded-lg bg-white p-5 shadow-[0_2px_12px_rgba(15,23,42,0.16)] sm:p-6">
+          <form
+            className="rounded-lg bg-white p-5 shadow-[0_2px_12px_rgba(15,23,42,0.16)] sm:p-6"
+            onSubmit={handleSubmit}
+          >
             <div className="mb-5 text-center">
               <h2 className="text-2xl font-bold text-slate-950">
                 Create a new account
               </h2>
               <p className="mt-1 text-sm text-slate-500">
-                  Create an account to network, collaborate, propose, and close deals
+                Create an account to network, collaborate, propose, and close
+                deals
               </p>
             </div>
 
@@ -32,8 +109,12 @@ const UserRegisterPage = () => {
                 className={fieldClassName}
                 id="email"
                 name="email"
+                onChange={handleChange}
                 placeholder="Email address"
+                required
                 type="email"
+                value={formData.email}
+                autoComplete="email"
               />
 
               <label className="sr-only" htmlFor="password">
@@ -43,20 +124,40 @@ const UserRegisterPage = () => {
                 className={fieldClassName}
                 id="password"
                 name="password"
+                onChange={handleChange}
                 placeholder="New password"
+                required
+                minLength={6}
                 type="password"
+                value={formData.password}
+                autoComplete="new-password"
               />
             </div>
 
+            {message && (
+              <p
+                className={`mt-4 rounded-md px-3 py-2 text-sm ${
+                  message.type === "success"
+                    ? "bg-emerald-50 text-emerald-700"
+                    : "bg-red-50 text-red-700"
+                }`}
+                role="status"
+                aria-live="polite"
+              >
+                {message.text}
+              </p>
+            )}
+
             <p className="mt-4 text-xs leading-5 text-slate-500">
-              By signing up, you agree to Blueprint's terms and privacy policy.
+              By signing up, you agree to Blueprint&apos;s terms and privacy policy.
             </p>
 
             <button
-              className="mt-5 h-12 w-full rounded-md px-5 text-base font-bold text-white transition bg-[#025fbd] focus:outline-none focus:ring-4 focus:ring-primary/25"
+              className="mt-5 h-12 w-full rounded-md bg-[#025fbd] px-5 text-base font-bold text-white transition focus:outline-none focus:ring-4 focus:ring-primary/25 disabled:cursor-not-allowed disabled:bg-slate-400"
+              disabled={isSubmitting}
               type="submit"
             >
-              Submit
+              {isSubmitting ? "Joining..." : "Join now"}
             </button>
 
             <div className="my-5 h-px bg-slate-200" />
