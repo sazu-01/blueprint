@@ -1,9 +1,10 @@
 
 import User from "../model/userModel.js";
-import bcrypt from "bcrypt";
+import bcrypt, { compare } from "bcrypt";
 import crypto from "node:crypto";
+import jwt from 'jsonwebtoken';
 import ProcessEmail from "../helpers/ProcessEmail.js";
-import { OTP_EXPIRES_IN_MINUTES } from "../hiddenEnv.js";
+import { OTP_EXPIRES_IN_MINUTES, JWT_SECRET } from "../hiddenEnv.js";
 
 const generateOtp = () => crypto.randomInt(100000, 1000000).toString();
 const normalizeEmail = (email) =>
@@ -133,141 +134,57 @@ const ActivateUser = async (req, res, next) => {
 };
 
 
-export { ActivateUser, RequestUserRegistration };
+
+const LoginUser = async (req, res, next) => {
+    try {
+      
+        const {email, password} = req.body;
+
+        const normalizedEmail = normalizeEmail(email);
+
+        if(!normalizedEmail || !password){
+            return res.status(400).send({
+                message : `Email and password is required`
+            })
+        }
+
+        const user = await User.findOne({email : normalizedEmail}).select("+password");
+
+        if(!user) {
+           return res.status(401).send({
+                message : "Invalid email or password",
+            })
+        }
+
+        if(!user.isVerified){
+            return res.status(403).send({
+                message : "please verify your email first"
+            })
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+
+        if(!isPasswordValid){
+           return res.status(401).send({
+            message : "invalid email or password"
+           })
+        }
+
+        const userResponse = user.toJSON();
+        delete userResponse.password;
+
+        const token = jwt.sign({userId : user._id}, JWT_SECRET, {expiresIn : '7d'});
+
+        return res.status(200).send({
+          message : `user login successful`,
+          user : userResponse,
+          token,
+        })
+     
+    } catch (error) {
+        next(error);
+    }
+}
 
 
-
-
-
-
-
-
-
-// const RequestUserRegistration = async (req, res, next) => {
-//     try {
-//         const { email, password } = req.body;
-//         const normalizedEmail = normalizeEmail(email);
-
-//         if (!normalizedEmail || typeof password !== "string" || !password) {
-//             return res.status(400).send({
-//                 message: "Email and password are required",
-//             });
-//         }
-
-//         const isUserExist = await User.findOne({ email: normalizedEmail });
-
-//         if (isUserExist) {
-//             return res.status(409).send({
-//                 message: "User already registered",
-//             });
-//         }
-
-//         const hashedPassword = await bcrypt.hash(password, 10);
-//         const otp = generateOtp();
-//         const hashedOtp = await bcrypt.hash(otp, 10);
-//         const expiresAt = new Date(Date.now() + OTP_EXPIRES_IN_MINUTES * 60 * 1000);
-
-//         await PendingUser.findOneAndUpdate(
-//             { email: normalizedEmail },
-//             {
-//                 email: normalizedEmail,
-//                 password: hashedPassword,
-//                 otp: hashedOtp,
-//                 expiresAt,
-//             },
-//             {
-//                 new: true,
-//                 setDefaultsOnInsert: true,
-//                 upsert: true,
-//             }
-//         );
-
-//         await ProcessEmail({
-//             email: normalizedEmail,
-//             subject: "Your Blueprint registration OTP",
-//             html: buildOtpEmailHtml(otp),
-//         });
-
-//         return res.status(200).send({
-//             message: "OTP sent to email. Submit the OTP to complete registration.",
-//         });
-//     } catch (error) {
-//         if (error.code === 11000) {
-//             return res.status(409).send({
-//                 message: "User already registered",
-//             });
-//         }
-
-//         next(error);
-//     }
-// };
-
-// const ActivateUser = async (req, res, next) => {
-//     try {
-//         const { email, otp } = req.body;
-//         const normalizedEmail = normalizeEmail(email);
-//         const normalizedOtp = normalizeOtp(otp);
-
-//         if (!normalizedEmail || !normalizedOtp) {
-//             return res.status(400).send({
-//                 message: "Email and OTP are required",
-//             });
-//         }
-
-//         if (!/^\d{6}$/.test(normalizedOtp)) {
-//             return res.status(400).send({
-//                 message: "OTP must be 6 digits",
-//             });
-//         }
-
-//         const pendingUser = await PendingUser.findOne({
-//             email: normalizedEmail,
-//         }).select("+password +otp");
-
-//         if (!pendingUser || pendingUser.expiresAt < new Date()) {
-//             await PendingUser.deleteOne({ email: normalizedEmail });
-
-//             return res.status(400).send({
-//                 message: "OTP expired or registration request not found",
-//             });
-//         }
-
-//         const isOtpValid = await bcrypt.compare(normalizedOtp, pendingUser.otp);
-
-//         if (!isOtpValid) {
-//             return res.status(400).send({
-//                 message: "Invalid OTP",
-//             });
-//         }
-
-//         const isUserExist = await User.findOne({ email: normalizedEmail });
-
-//         if (isUserExist) {
-//             await PendingUser.deleteOne({ email: normalizedEmail });
-
-//             return res.status(409).send({
-//                 message: "User already registered",
-//             });
-//         }
-
-//         const user = await User.create({
-//             email: normalizedEmail,
-//             password: pendingUser.password,
-//         });
-
-//         await PendingUser.deleteOne({ email: normalizedEmail });
-
-//         return res.status(201).send({
-//             message: "User registered successfully.",
-//             user,
-//         });
-//     } catch (error) {
-//         if (error.code === 11000) {
-//             return res.status(409).send({
-//                 message: "User already registered",
-//             });
-//         }
-
-//         next(error);
-//     }
-// };
+export { ActivateUser, RequestUserRegistration, LoginUser };
