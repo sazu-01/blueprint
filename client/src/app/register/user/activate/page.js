@@ -3,9 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-const apiBaseUrl = (
-  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000"
-).replace(/\/$/, "");
+const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+if (!apiBaseUrl) {
+  console.log("activate url is not defined");
+}
 
 const fieldClassName =
   "h-12 w-full rounded-md border border-slate-300 bg-white px-4 text-center text-[18px] font-semibold tracking-[6px] text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-primary focus:ring-primary/15";
@@ -59,7 +61,7 @@ const UserActivatePage = () => {
 
     try {
       const response = await fetch(
-        `${apiBaseUrl}/api/auth/register/user/activate`,
+        `${apiBaseUrl}/auth/register/user/activate`,
         {
           method: "POST",
           headers: {

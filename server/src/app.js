@@ -1,11 +1,14 @@
 import express from "express";
 import authRouter from "./route/authRoute.js";
+import { DEVELOPMENT_CLIENT_URL, PRODUCTION_CLIENT_URL } from "./hiddenEnv.js";
 
 const app = express();
 
 const allowedOrigins = new Set([
-    "http://localhost:3000",
+    DEVELOPMENT_CLIENT_URL,
+    PRODUCTION_CLIENT_URL
 ]);
+
 
 app.use((req, res, next) => {
     const origin = req.headers.origin;

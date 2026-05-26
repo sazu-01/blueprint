@@ -4,10 +4,11 @@ import { useState } from "react";
 import Image from 'next/image';
 import { useRouter } from "next/navigation";
 
-const apiBaseUrl = (
-  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000"
-).replace(/\/$/, "");
+const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
+if (!apiBaseUrl) {
+  console.log("login url is not defined");
+}
 
 const fieldClassName =
   "h-12 w-full rounded-md border border-slate-300 bg-white px-4 text-[15px] text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-primary focus:ring-primary/15";
@@ -51,7 +52,7 @@ const UserLoginPage = () => {
 
         try {
             const response = await fetch(
-                `${apiBaseUrl}/api/auth/login/user`,
+                `${apiBaseUrl}/auth/login/user`,
                 {
                     method: "POST",
                     headers: {
@@ -81,7 +82,7 @@ const UserLoginPage = () => {
                 text: data.message || "Login successful!",
             });
 
-            // ✅ Redirect to dashboard/home
+            // ✅ Redirect to home
             setTimeout(() => {
                 router.push("/");
             }, 500);
