@@ -5,6 +5,7 @@ import crypto from "node:crypto";
 import jwt from 'jsonwebtoken';
 import ProcessEmail from "../helpers/ProcessEmail.js";
 import { OTP_EXPIRES_IN_MINUTES, JWT_SECRET } from "../hiddenEnv.js";
+import { errorResponse, successResponse } from "../helpers/response.js";
 
 const generateOtp = () => crypto.randomInt(100000, 1000000).toString();
 const normalizeEmail = (email) =>
@@ -41,9 +42,10 @@ const RequestUserRegistration = async (req, res, next) => {
 
         if (isUserExist && isUserExist.isVerified) {
             // only verified user will be registered 
-            return res.status(409).send({
-                message: "User already registered",
-            });
+            return errorResponse(res,{
+                statusCode: 409,
+                message: `User already registered`
+            })
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -70,9 +72,10 @@ const RequestUserRegistration = async (req, res, next) => {
             html: buildOtpEmailHtml(otp),
         });
 
-        return res.status(200).send({
-            message: "OTP sent to email. Submit the OTP to complete registration.",
-        });
+        return successResponse(res,{
+            statusCode : 200,
+            message:  `OTP sent to email. Submit the OTP to complete registration.`
+        })
     } catch (error) {
         next(error);
     }
@@ -86,36 +89,41 @@ const ActivateUser = async (req, res, next) => {
         const normalizedOtp = normalizeOtp(otp);
 
         if (!normalizedEmail || !normalizedOtp) {
-            return res.status(400).send({
-                message: "Email and OTP are required",
-            });
+          return  errorResponse(res,{
+                statusCode: 400,
+                message : `Email and OTP are required`
+            })
         }
 
         const user = await User.findOne({ email: normalizedEmail }).select("+otp +otpExpiresAt");
 
         if (!user) {
-            return res.status(400).send({
-                message: "User not found. Please register first.",
+            return errorResponse(res, {
+                statusCode: 400,
+                message: "User not found. Please register first."
             });
         }
 
         if (user.isVerified) {
-            return res.status(409).send({
-                message: "User already registered",
+            return errorResponse(res, {
+                statusCode: 409,
+                message: "User already registered"
             });
         }
 
         if (user.otpExpiresAt < new Date()) {
-            return res.status(400).send({
-                message: "OTP expired",
+            return errorResponse(res, {
+                statusCode: 400,
+                message: "OTP expired"
             });
         }
 
         const isOtpValid = await bcrypt.compare(normalizedOtp, user.otp);
 
         if (!isOtpValid) {
-            return res.status(400).send({
-                message: "Invalid OTP",
+            return errorResponse(res, {
+                statusCode: 400,
+                message: "Invalid OTP"
             });
         }
 
@@ -124,10 +132,13 @@ const ActivateUser = async (req, res, next) => {
         user.otpExpiresAt = undefined;
         await user.save();
 
-        return res.status(201).send({
-            message: "User registered successfully.",
-            user: user.toJSON(),  // password will be hide
-        });
+        return successResponse(res,{
+            statusCode: 201,
+            message: `User registered successfully`,
+            payload : {
+                user : user.toJSON(),
+            }
+        })
     } catch (error) {
         next(error);
     }
@@ -143,31 +154,35 @@ const LoginUser = async (req, res, next) => {
         const normalizedEmail = normalizeEmail(email);
 
         if(!normalizedEmail || !password){
-            return res.status(400).send({
-                message : `Email and password is required`
-            })
+            return errorResponse(res, {
+                statusCode: 400,
+                message: "Email and password are required"
+            });
         }
 
         const user = await User.findOne({email : normalizedEmail}).select("+password");
 
         if(!user) {
-           return res.status(401).send({
-                message : "Invalid email or password",
-            })
+            return errorResponse(res, {
+                statusCode: 401,
+                message: "Invalid email or password"
+            });
         }
 
         if(!user.isVerified){
-            return res.status(403).send({
-                message : "please verify your email first"
-            })
+            return errorResponse(res, {
+                statusCode: 403,
+                message: "Please verify your email first"
+            });
         }
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
 
         if(!isPasswordValid){
-           return res.status(401).send({
-            message : "invalid email or password"
-           })
+            return errorResponse(res, {
+                statusCode: 401,
+                message: "Invalid email or password"
+            });
         }
 
         const userResponse = user.toJSON();
@@ -175,10 +190,13 @@ const LoginUser = async (req, res, next) => {
 
         const token = jwt.sign({userId : user._id}, JWT_SECRET, {expiresIn : '7d'});
 
-        return res.status(200).send({
-          message : `user login successful`,
-          user : userResponse,
-          token,
+        return successResponse(res,{
+            statusCode : 200,
+            message : `User login successful`,
+            payload : {
+                user: userResponse,
+                token
+            }
         })
      
     } catch (error) {

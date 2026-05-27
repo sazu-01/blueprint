@@ -1,36 +1,19 @@
+
 import express from "express";
 import authRouter from "./route/authRoute.js";
-import { DEVELOPMENT_CLIENT_URL, PRODUCTION_CLIENT_URL } from "./hiddenEnv.js";
+import cors from "cors";
 
 const app = express();
 
-const allowedOrigins = new Set([
-    DEVELOPMENT_CLIENT_URL,
-    PRODUCTION_CLIENT_URL
-]);
+const corsOption = {
+    origin : ["http://localhost:3000", "https://blueprintt.vercel.app"],
+    credentials : true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}
 
-
-app.use((req, res, next) => {
-    const origin = req.headers.origin;
-
-    if (origin && allowedOrigins.has(origin)) {
-        res.setHeader("Access-Control-Allow-Origin", origin);
-        res.setHeader("Vary", "Origin");
-    }
-
-    res.setHeader(
-        "Access-Control-Allow-Methods",
-        "GET,POST,PUT,PATCH,DELETE,OPTIONS"
-    );
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-    if (req.method === "OPTIONS") {
-        return res.sendStatus(204);
-    }
-
-    next();
-});
-
+//middleware
+app.use((cors(corsOption)))
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/api/auth", authRouter);
