@@ -32,70 +32,60 @@ const UserLoginPage = () => {
         }));
     };
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        setMessage(null);
+const handleSubmit = async (event) => {
+    event.preventDefault();
+    setMessage(null);
+    const normalizedEmail = formData.email.trim();
+    const normalizedPassword = formData.password.trim();
 
-        const normalizedEmail = formData.email.trim();
-        const normalizedPassword = formData.password.trim();
+    if (!normalizedEmail || !normalizedPassword) {
+        setMessage({
+            type: "error",
+            text: "Email and password are required.",
+        });
+        return;
+    }
 
-        // ✅ Validation
-        if (!normalizedEmail || !normalizedPassword) {
-            setMessage({
-                type: "error",
-                text: "Email and password are required.",
-            });
-            return;
+    setIsSubmitting(true);
+    try {
+        const response = await fetch(`${apiBaseUrl}/auth/login/user`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                email: normalizedEmail,
+                password: normalizedPassword,
+            }),
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+            throw new Error(data.message || "Login failed. Please try again.");
         }
 
-        setIsSubmitting(true);
+        localStorage.setItem("user", JSON.stringify(data.payload.user));
 
-        try {
-            const response = await fetch(
-                `${apiBaseUrl}/auth/login/user`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        email: normalizedEmail,
-                        password: normalizedPassword,
-                    }),
-                }
-            );
+        setMessage({
+            type: "success",
+            text: data.message || "Login successful!",
+        });
 
-            const data = await response.json().catch(() => ({}));
+        setTimeout(() => {
+            router.push("/");
+        }, 500);
 
-            if (!response.ok) {
-                throw new Error(data.message || "Login failed. Please try again.");
-            }
-
-            // ✅ Store token in localStorage
-            localStorage.setItem("authToken", data.token);
-            
-            // ✅ Optional: Store user info
-            localStorage.setItem("user", JSON.stringify(data.user));
-
-            setMessage({
-                type: "success",
-                text: data.message || "Login successful!",
-            });
-
-            // ✅ Redirect to home
-            setTimeout(() => {
-                router.push("/");
-            }, 500);
-
-        } catch (error) {
-            setMessage({
-                type: "error",
-                text: error.message || "Login failed. Please try again.",
-            });
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
+    } catch (error) {
+        setMessage({
+            type: "error",
+            text: error.message || "Login failed. Please try again.",
+        });
+    } finally {
+        setIsSubmitting(false);
+    }
+};
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#f0f2f5] px-4 py-10 text-slate-900">
       <section className="grid w-full max-w-5xl items-center gap-10 md:grid-cols-[1fr_420px] md:gap-14">

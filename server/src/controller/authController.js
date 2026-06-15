@@ -4,7 +4,7 @@ import bcrypt, { compare } from "bcrypt";
 import crypto from "node:crypto";
 import jwt from 'jsonwebtoken';
 import ProcessEmail from "../helpers/ProcessEmail.js";
-import { OTP_EXPIRES_IN_MINUTES, JWT_SECRET } from "../hiddenEnv.js";
+import { OTP_EXPIRES_IN_MINUTES, JWT_SECRET, NODE_ENV } from "../hiddenEnv.js";
 import { errorResponse, successResponse } from "../helpers/response.js";
 
 const generateOtp = () => crypto.randomInt(100000, 1000000).toString();
@@ -42,7 +42,7 @@ const RequestUserRegistration = async (req, res, next) => {
 
         if (isUserExist && isUserExist.isVerified) {
             // only verified user will be registered 
-            return errorResponse(res,{
+            return errorResponse(res, {
                 statusCode: 409,
                 message: `User already registered`
             })
@@ -51,7 +51,7 @@ const RequestUserRegistration = async (req, res, next) => {
         const hashedPassword = await bcrypt.hash(password, 10);
         const otp = generateOtp();
         const hashedOtp = await bcrypt.hash(otp, 10);
-        const expiresAt = new Date(Date.now() + OTP_EXPIRES_IN_MINUTES  * 60 * 1000);
+        const expiresAt = new Date(Date.now() + OTP_EXPIRES_IN_MINUTES * 60 * 1000);
 
 
         await User.findOneAndUpdate(
@@ -61,9 +61,9 @@ const RequestUserRegistration = async (req, res, next) => {
                 password: hashedPassword,
                 otp: hashedOtp,
                 otpExpiresAt: expiresAt,
-                isVerified: false,  
+                isVerified: false,
             },
-            { returnDocument : 'after',  upsert: true,}
+            { returnDocument: 'after', upsert: true, }
         );
 
         await ProcessEmail({
@@ -72,9 +72,9 @@ const RequestUserRegistration = async (req, res, next) => {
             html: buildOtpEmailHtml(otp),
         });
 
-        return successResponse(res,{
-            statusCode : 200,
-            message:  `OTP sent to email. Submit the OTP to complete registration.`
+        return successResponse(res, {
+            statusCode: 200,
+            message: `OTP sent to email. Submit the OTP to complete registration.`
         })
     } catch (error) {
         next(error);
@@ -89,9 +89,9 @@ const ActivateUser = async (req, res, next) => {
         const normalizedOtp = normalizeOtp(otp);
 
         if (!normalizedEmail || !normalizedOtp) {
-          return  errorResponse(res,{
+            return errorResponse(res, {
                 statusCode: 400,
-                message : `Email and OTP are required`
+                message: `Email and OTP are required`
             })
         }
 
@@ -132,11 +132,20 @@ const ActivateUser = async (req, res, next) => {
         user.otpExpiresAt = undefined;
         await user.save();
 
-        return successResponse(res,{
+        const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: "7d" });
+
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: NODE_ENV === "production",
+            sameSite: NODE_ENV === "production" ? "None" : "Lax",
+            maxAge: 7 * 24 * 60 * 60 * 1000
+        });
+
+        return successResponse(res, {
             statusCode: 201,
             message: `User registered successfully`,
-            payload : {
-                user : user.toJSON(),
+            payload: {
+                user: user.toJSON(),
             }
         })
     } catch (error) {
@@ -148,28 +157,28 @@ const ActivateUser = async (req, res, next) => {
 
 const LoginUser = async (req, res, next) => {
     try {
-      
-        const {email, password} = req.body;
+
+        const { email, password } = req.body;
 
         const normalizedEmail = normalizeEmail(email);
 
-        if(!normalizedEmail || !password){
+        if (!normalizedEmail || !password) {
             return errorResponse(res, {
                 statusCode: 400,
                 message: "Email and password are required"
             });
         }
 
-        const user = await User.findOne({email : normalizedEmail}).select("+password");
+        const user = await User.findOne({ email: normalizedEmail }).select("+password");
 
-        if(!user) {
+        if (!user) {
             return errorResponse(res, {
                 statusCode: 401,
                 message: "Invalid email or password"
             });
         }
 
-        if(!user.isVerified){
+        if (!user.isVerified) {
             return errorResponse(res, {
                 statusCode: 403,
                 message: "Please verify your email first"
@@ -178,7 +187,7 @@ const LoginUser = async (req, res, next) => {
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
 
-        if(!isPasswordValid){
+        if (!isPasswordValid) {
             return errorResponse(res, {
                 statusCode: 401,
                 message: "Invalid email or password"
@@ -188,21 +197,47 @@ const LoginUser = async (req, res, next) => {
         const userResponse = user.toJSON();
         delete userResponse.password;
 
-        const token = jwt.sign({userId : user._id}, JWT_SECRET, {expiresIn : '7d'});
+        const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '7d' });
 
-        return successResponse(res,{
-            statusCode : 200,
-            message : `User login successful`,
-            payload : {
-                user: userResponse,
-                token
-            }
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: NODE_ENV === "production",
+            sameSite: NODE_ENV === "production" ? "None" : "Lax",
+            maxAge: 7 * 24 * 60 * 60 * 1000
         })
-     
+
+        return successResponse(res, {
+            statusCode: 200,
+            message: `User login successful`,
+            payload: { user: userResponse }
+        })
+
     } catch (error) {
         next(error);
     }
 }
 
 
-export { ActivateUser, RequestUserRegistration, LoginUser };
+const LogoutUser = (req, res, next) => {
+  try {
+    
+    //Clear access token with proper options
+    res.clearCookie('token', {
+        httpOnly: true,
+        secure: NODE_ENV === "production", // only secure in production
+        sameSite: NODE_ENV === "production" ? "None" : "Lax", // for cross-site cookies in production
+    });
+
+    //return successful response
+    return successResponse(res, {
+      statusCode: 200,
+      message: "user logged out successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+
+export { ActivateUser, RequestUserRegistration, LoginUser, LogoutUser };
