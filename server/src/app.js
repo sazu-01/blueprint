@@ -2,6 +2,7 @@
 import express from "express";
 import authRouter from "./route/authRoute.js";
 import cors from "cors";
+import companieRoute from "./route/companieRoute.js";
 
 const app = express();
 
@@ -16,7 +17,10 @@ const corsOption = {
 app.use((cors(corsOption)))
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+//routes
 app.use("/api/auth", authRouter);
+app.use("/api",companieRoute);
 
 app.get("/", (req, res) => {
     res.status(200).send("welcome to server");
