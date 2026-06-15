@@ -33,6 +33,8 @@ const createCompanyController = async (req, res, next) => {
             industryVertical,
             businessActivity,
             interestedIndustries,
+            createdBy: req.user._id,
+
             
             // Optional fields (if provided)
             ...(req.body.country && { country: req.body.country }),
@@ -48,6 +50,11 @@ const createCompanyController = async (req, res, next) => {
         // 5. Save to database
         const savedCompany = await newCompany.save();
 
+
+       // Populate createdBy with user info after save
+       const populatedCompany = await Company.findById(savedCompany._id)
+       .populate("createdBy", "name email");
+
         // 6. Return success response
         return successResponse(res, {
             statusCode: 201,
@@ -58,6 +65,7 @@ const createCompanyController = async (req, res, next) => {
                 legalName: savedCompany.legalName,
                 industryVertical: savedCompany.industryVertical,
                 verificationStatus: savedCompany.verificationStatus,
+                createdBy: populatedCompany.createdBy,
                 createdAt: savedCompany.createdAt,
             }
         });

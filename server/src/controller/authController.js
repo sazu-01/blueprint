@@ -27,32 +27,95 @@ const buildOtpEmailHtml = (otp) => `
 
 
 
+// const RequestUserRegistration = async (req, res, next) => {
+
+//     try {
+//         const { email, password } = req.body;
+//         const normalizedEmail = normalizeEmail(email);
+
+//         if (!normalizedEmail || !password) {
+//             return res.status(400).send({
+//                 message: "Email and password are required",
+//             });
+//         }
+
+//         const isUserExist = await User.findOne({ email: normalizedEmail });
+
+//         if (isUserExist && isUserExist.isVerified) {
+//             // only verified user will be registered 
+//             return errorResponse(res, {
+//                 statusCode: 409,
+//                 message: `User already registered`
+//             })
+//         }
+
+//         const hashedPassword = await bcrypt.hash(password, 10);
+//         const otp = generateOtp();
+//         const hashedOtp = await bcrypt.hash(otp, 10);
+//         const expiresAt = new Date(Date.now() + OTP_EXPIRES_IN_MINUTES * 60 * 1000);
+
+
+//         await User.findOneAndUpdate(
+//             { email: normalizedEmail },
+//             {
+//                 email: normalizedEmail,
+//                 password: hashedPassword,
+//                 otp: hashedOtp,
+//                 otpExpiresAt: expiresAt,
+//                 isVerified: false,
+//             },
+//             { returnDocument: 'after', upsert: true, }
+//         );
+
+//         await ProcessEmail({
+//             email: normalizedEmail,
+//             subject: "Your Blueprint registration OTP",
+//             html: buildOtpEmailHtml(otp),
+//         });
+
+//         return successResponse(res, {
+//             statusCode: 200,
+//             message: `OTP sent to email. Submit the OTP to complete registration.`
+//         })
+//     } catch (error) {
+//         next(error);
+//     }
+// };
+
+
 const RequestUserRegistration = async (req, res, next) => {
+    const debug = [];
+
     try {
+        debug.push("STEP 1: Request received");
+
         const { email, password } = req.body;
+        debug.push("STEP 2: Body parsed");
+
         const normalizedEmail = normalizeEmail(email);
+        debug.push("STEP 3: Email normalized");
 
         if (!normalizedEmail || !password) {
-            return res.status(400).send({
+            return res.status(400).json({
                 message: "Email and password are required",
+                debug
             });
         }
 
         const isUserExist = await User.findOne({ email: normalizedEmail });
-
-        if (isUserExist && isUserExist.isVerified) {
-            // only verified user will be registered 
-            return errorResponse(res, {
-                statusCode: 409,
-                message: `User already registered`
-            })
-        }
+        debug.push("STEP 4: DB user check done");
 
         const hashedPassword = await bcrypt.hash(password, 10);
+        debug.push("STEP 5: Password hashed");
+
         const otp = generateOtp();
         const hashedOtp = await bcrypt.hash(otp, 10);
-        const expiresAt = new Date(Date.now() + OTP_EXPIRES_IN_MINUTES * 60 * 1000);
+        debug.push("STEP 6: OTP generated");
 
+        const expiresAt = new Date(
+            Date.now() + OTP_EXPIRES_IN_MINUTES * 60 * 1000
+        );
+        debug.push("STEP 7: OTP expiry set");
 
         await User.findOneAndUpdate(
             { email: normalizedEmail },
@@ -63,24 +126,45 @@ const RequestUserRegistration = async (req, res, next) => {
                 otpExpiresAt: expiresAt,
                 isVerified: false,
             },
-            { returnDocument: 'after', upsert: true, }
+            { returnDocument: "after", upsert: true }
         );
 
-        await ProcessEmail({
-            email: normalizedEmail,
-            subject: "Your Blueprint registration OTP",
-            html: buildOtpEmailHtml(otp),
+        debug.push("STEP 8: User saved in DB");
+
+        try {
+            debug.push("STEP 9: Sending email start");
+
+            await ProcessEmail({
+                email: normalizedEmail,
+                subject: "Your Blueprint registration OTP",
+                html: buildOtpEmailHtml(otp),
+            });
+
+            debug.push("STEP 10: Email sent success");
+
+        } catch (emailError) {
+            debug.push("EMAIL FAILED");
+
+            return res.status(500).json({
+                message: "Email sending failed",
+                error: emailError.message,
+                debug
+            });
+        }
+
+        return res.status(200).json({
+            message: "OTP sent to email",
+            debug
         });
 
-        return successResponse(res, {
-            statusCode: 200,
-            message: `OTP sent to email. Submit the OTP to complete registration.`
-        })
     } catch (error) {
-        next(error);
+        return res.status(500).json({
+            message: error.message || "Server error",
+            errorDetails: error.details || null,
+            debug
+        });
     }
 };
-
 
 const ActivateUser = async (req, res, next) => {
     try {
@@ -219,23 +303,23 @@ const LoginUser = async (req, res, next) => {
 
 
 const LogoutUser = (req, res, next) => {
-  try {
-    
-    //Clear access token with proper options
-    res.clearCookie('token', {
-        httpOnly: true,
-        secure: NODE_ENV === "production", // only secure in production
-        sameSite: NODE_ENV === "production" ? "None" : "Lax", // for cross-site cookies in production
-    });
+    try {
 
-    //return successful response
-    return successResponse(res, {
-      statusCode: 200,
-      message: "user logged out successfully",
-    });
-  } catch (error) {
-    next(error);
-  }
+        //Clear access token with proper options
+        res.clearCookie('token', {
+            httpOnly: true,
+            secure: NODE_ENV === "production", // only secure in production
+            sameSite: NODE_ENV === "production" ? "None" : "Lax", // for cross-site cookies in production
+        });
+
+        //return successful response
+        return successResponse(res, {
+            statusCode: 200,
+            message: "user logged out successfully",
+        });
+    } catch (error) {
+        next(error);
+    }
 };
 
 

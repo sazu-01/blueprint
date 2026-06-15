@@ -54,6 +54,12 @@ const companieSchema = new Schema({
     officialDomain: {
         type: String
     },
+
+    owner: {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+    },
     
     verificationStatus: {  // For future verification feature
         type: String,

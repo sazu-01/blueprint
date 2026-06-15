@@ -14,12 +14,13 @@ const fieldClassName =
   "h-12 w-full rounded-md border border-slate-300 bg-white px-4 text-[15px] text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-primary focus:ring-primary/15";
 
 const UserRegisterPage = () => {
-  const router = useRouter(); 
+  const router = useRouter();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
   const [message, setMessage] = useState(null);
+  const [debug, setDebug] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (event) => {
@@ -68,8 +69,11 @@ const UserRegisterPage = () => {
     } catch (error) {
       setMessage({
         type: "error",
-        text: error.message || "OTP request failed. Please try again.",
+        text: error.message || "OTP request failed",
       });
+
+      setDebug(error.debug || null);
+      console.error("FULL ERROR:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -138,16 +142,21 @@ const UserRegisterPage = () => {
 
             {message && (
               <p
-                className={`mt-4 rounded-md px-3 py-2 text-sm ${
-                  message.type === "success"
-                    ? "bg-emerald-50 text-emerald-700"
-                    : "bg-red-50 text-red-700"
-                }`}
+                className={`mt-4 rounded-md px-3 py-2 text-sm ${message.type === "success"
+                  ? "bg-emerald-50 text-emerald-700"
+                  : "bg-red-50 text-red-700"
+                  }`}
                 role="status"
                 aria-live="polite"
               >
                 {message.text}
               </p>
+            )}
+
+            {debug && (
+              <pre className="mt-3 max-h-40 overflow-auto rounded bg-black p-3 text-xs text-green-400">
+                {JSON.stringify(debug, null, 2)}
+              </pre>
             )}
 
             <p className="mt-4 text-xs leading-5 text-slate-500">
