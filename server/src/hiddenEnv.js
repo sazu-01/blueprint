@@ -12,6 +12,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 const DEVELOPMENT_CLIENT_URL=process.env.DEVELOPMENT_CLIENT_URL;
 const PRODUCTION_CLIENT_URL=process.env.PRODUCTION_CLIENT_URL;
 const NODE_ENV=process.env.NODE_ENV;
+const BREVO_API_KEY=process.env.BREVO_API_KEY;
 
 export {
     MongodbURL,
@@ -22,5 +23,6 @@ export {
     JWT_SECRET,
     DEVELOPMENT_CLIENT_URL,
     PRODUCTION_CLIENT_URL,
-    NODE_ENV
+    NODE_ENV,
+    BREVO_API_KEY
 }

@@ -4,7 +4,7 @@ import bcrypt, { compare } from "bcrypt";
 import crypto from "node:crypto";
 import jwt from 'jsonwebtoken';
 import ProcessEmail from "../helpers/ProcessEmail.js";
-import { OTP_EXPIRES_IN_MINUTES, JWT_SECRET, NODE_ENV } from "../hiddenEnv.js";
+import { OTP_EXPIRES_IN_MINUTES, JWT_SECRET, NODE_ENV, BREVO_API_KEY } from "../hiddenEnv.js";
 import { errorResponse, successResponse } from "../helpers/response.js";
 
 const generateOtp = () => crypto.randomInt(100000, 1000000).toString();
@@ -26,96 +26,28 @@ const buildOtpEmailHtml = (otp) => `
 `;
 
 
-
-// const RequestUserRegistration = async (req, res, next) => {
-
-//     try {
-//         const { email, password } = req.body;
-//         const normalizedEmail = normalizeEmail(email);
-
-//         if (!normalizedEmail || !password) {
-//             return res.status(400).send({
-//                 message: "Email and password are required",
-//             });
-//         }
-
-//         const isUserExist = await User.findOne({ email: normalizedEmail });
-
-//         if (isUserExist && isUserExist.isVerified) {
-//             // only verified user will be registered 
-//             return errorResponse(res, {
-//                 statusCode: 409,
-//                 message: `User already registered`
-//             })
-//         }
-
-//         const hashedPassword = await bcrypt.hash(password, 10);
-//         const otp = generateOtp();
-//         const hashedOtp = await bcrypt.hash(otp, 10);
-//         const expiresAt = new Date(Date.now() + OTP_EXPIRES_IN_MINUTES * 60 * 1000);
-
-
-//         await User.findOneAndUpdate(
-//             { email: normalizedEmail },
-//             {
-//                 email: normalizedEmail,
-//                 password: hashedPassword,
-//                 otp: hashedOtp,
-//                 otpExpiresAt: expiresAt,
-//                 isVerified: false,
-//             },
-//             { returnDocument: 'after', upsert: true, }
-//         );
-
-//         await ProcessEmail({
-//             email: normalizedEmail,
-//             subject: "Your Blueprint registration OTP",
-//             html: buildOtpEmailHtml(otp),
-//         });
-
-//         return successResponse(res, {
-//             statusCode: 200,
-//             message: `OTP sent to email. Submit the OTP to complete registration.`
-//         })
-//     } catch (error) {
-//         next(error);
-//     }
-// };
-
-
 const RequestUserRegistration = async (req, res, next) => {
-    const debug = [];
-
     try {
-        debug.push("STEP 1: Request received");
-
         const { email, password } = req.body;
-        debug.push("STEP 2: Body parsed");
 
         const normalizedEmail = normalizeEmail(email);
-        debug.push("STEP 3: Email normalized");
 
         if (!normalizedEmail || !password) {
             return res.status(400).json({
                 message: "Email and password are required",
-                debug
             });
         }
 
         const isUserExist = await User.findOne({ email: normalizedEmail });
-        debug.push("STEP 4: DB user check done");
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        debug.push("STEP 5: Password hashed");
 
         const otp = generateOtp();
         const hashedOtp = await bcrypt.hash(otp, 10);
-        debug.push("STEP 6: OTP generated");
 
         const expiresAt = new Date(
             Date.now() + OTP_EXPIRES_IN_MINUTES * 60 * 1000
         );
-        debug.push("STEP 7: OTP expiry set");
 
         await User.findOneAndUpdate(
             { email: normalizedEmail },
@@ -129,39 +61,27 @@ const RequestUserRegistration = async (req, res, next) => {
             { returnDocument: "after", upsert: true }
         );
 
-        debug.push("STEP 8: User saved in DB");
-
         try {
-            debug.push("STEP 9: Sending email start");
-
             await ProcessEmail({
                 email: normalizedEmail,
                 subject: "Your Blueprint registration OTP",
                 html: buildOtpEmailHtml(otp),
             });
-
-            debug.push("STEP 10: Email sent success");
-
         } catch (emailError) {
-            debug.push("EMAIL FAILED");
 
             return res.status(500).json({
                 message: "Email sending failed",
                 error: emailError.message,
-                debug
             });
         }
 
         return res.status(200).json({
             message: "OTP sent to email",
-            debug
         });
 
     } catch (error) {
         return res.status(500).json({
             message: error.message || "Server error",
-            errorDetails: error.details || null,
-            debug
         });
     }
 };

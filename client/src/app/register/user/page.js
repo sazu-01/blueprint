@@ -6,9 +6,6 @@ import { useState } from "react";
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-if (!apiBaseUrl) {
-  console.log("register url is not defined");
-}
 
 const fieldClassName =
   "h-12 w-full rounded-md border border-slate-300 bg-white px-4 text-[15px] text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-primary focus:ring-primary/15";
@@ -20,7 +17,6 @@ const UserRegisterPage = () => {
     password: "",
   });
   const [message, setMessage] = useState(null);
-  const [debug, setDebug] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (event) => {
@@ -61,19 +57,18 @@ const UserRegisterPage = () => {
       const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        throw new Error(data.message || "OTP request failed. Please try again.");
+        const error = new Error(data.message || "OTP request failed");
+        throw error;
       }
-
+  
       sessionStorage.setItem("pendingRegistrationEmail", email);
       router.push(`/register/user/activate?email=${encodeURIComponent(email)}`);
     } catch (error) {
       setMessage({
         type: "error",
-        text: error.message || "OTP request failed",
+        text: error.message,
       });
 
-      setDebug(error.debug || null);
-      console.error("FULL ERROR:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -151,12 +146,6 @@ const UserRegisterPage = () => {
               >
                 {message.text}
               </p>
-            )}
-
-            {debug && (
-              <pre className="mt-3 max-h-40 overflow-auto rounded bg-black p-3 text-xs text-green-400">
-                {JSON.stringify(debug, null, 2)}
-              </pre>
             )}
 
             <p className="mt-4 text-xs leading-5 text-slate-500">
