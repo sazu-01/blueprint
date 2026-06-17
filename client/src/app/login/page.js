@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from 'next/image';
 import { useRouter } from "next/navigation";
-
+import useAuthStore from "../store/UseauthStore.js";
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 if (!apiBaseUrl) {
@@ -19,6 +19,7 @@ const UserLoginPage = () => {
     const router = useRouter();
     const [message, setMessage] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const { login } = useAuthStore();
     const [formData, setFormData] = useState({
         email: "",
         password: "",
@@ -66,7 +67,7 @@ const handleSubmit = async (event) => {
             throw new Error(data.message || "Login failed. Please try again.");
         }
 
-        localStorage.setItem("user", JSON.stringify(data.payload.user));
+        login(data.payload.user);
 
         setMessage({
             type: "success",

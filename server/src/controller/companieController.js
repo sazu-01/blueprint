@@ -102,4 +102,49 @@ const getAllCompanies = async (req, res, next) => {
     }
 }
 
-export { createCompanyController, getAllCompanies };
+
+const getCompanyByLegalName = async (req, res, next) => {
+    try {
+        // 1. Get legalName from URL params
+        const { legalName } = req.query;
+
+        // 2. Validate
+        if (!legalName) {
+            return errorResponse(res, {
+                statusCode: 400,
+                message: "Legal name is required"
+            });
+        }
+
+        // 3. Find company and populate createdBy
+        const company = await Company.findOne({ 
+            legalName: legalName.trim() 
+        }).populate("createdBy", "name email");
+
+        // 4. If not found
+        if (!company) {
+            return errorResponse(res, {
+                statusCode: 404,
+                message: "Company not found"
+            });
+        }
+
+        // 5. Return success
+        return successResponse(res, {
+            statusCode: 200,
+            message: "Company found",
+            payload: {
+                company
+            }
+        });
+
+    } catch (error) {
+        console.error("Error in getCompanyByLegalName:", error);
+        return errorResponse(res, {
+            statusCode: 500,
+            message: "Error finding company"
+        });
+    }
+};
+
+export { createCompanyController, getAllCompanies, getCompanyByLegalName };
