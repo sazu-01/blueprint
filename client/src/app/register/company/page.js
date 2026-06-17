@@ -18,6 +18,7 @@ const CompanyRegisterPage = () => {
     industryVertical: [],
     businessActivity: [],
     interestedIndustries: [],
+     logo: null,
   });
 
   const [errors, setErrors] = useState({});
@@ -115,12 +116,33 @@ const CompanyRegisterPage = () => {
     if (!formData.industryVertical.length === 0) newErrors.industryVertical = 'Industry vertical is required';
     if (!formData.businessActivity.length === 0) newErrors.businessActivity = 'Business activity is required';
     if (!formData.interestedIndustries.length === 0) newErrors.interestedIndustries = 'Interested industries is required';
-
+    if (!formData.logo) newErrors.logo = "Company logo is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+const companyData = new FormData();
 
+companyData.append("logo", formData.logo);
+
+companyData.append("name", formData.name);
+companyData.append("legalName", formData.legalName);
+companyData.append("description", formData.description);
+
+companyData.append(
+  "industryVertical",
+  JSON.stringify(formData.industryVertical)
+);
+
+companyData.append(
+  "businessActivity",
+  JSON.stringify(formData.businessActivity)
+);
+
+companyData.append(
+  "interestedIndustries",
+  JSON.stringify(formData.interestedIndustries)
+);
 
   // Handle form submission
   const handleSubmit = async (e) => {
@@ -136,11 +158,15 @@ const CompanyRegisterPage = () => {
     try {
       const response = await fetch(`${apiBaseUrl}/register/company`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        // headers: {
+        //   'Content-Type': 'application/json',
+        // },
+        
         credentials: "include",
-        body: JSON.stringify(formData),
+         body: companyData,
+        // body: JSON.stringify(formData),
+
+        
       });
 
       const data = await response.json();
@@ -229,6 +255,47 @@ const CompanyRegisterPage = () => {
 
           </div>
         </div>
+
+
+
+
+
+
+
+
+
+        <div>
+  <label
+    htmlFor="logo"
+    className="block text-sm font-semibold text-slate-900 mb-2"
+  >
+    Company Logo <span className="text-red-500">*</span>
+  </label>
+
+  <input
+    type="file"
+    id="logo"
+    accept="image/*"
+    onChange={(e) =>
+      setFormData((prev) => ({
+        ...prev,
+        logo: e.target.files?.[0] || null,
+      }))
+    }
+    className="w-full px-4 py-2 border border-slate-300 rounded-lg"
+  />
+
+  {errors.logo && (
+    <p className="text-red-600 text-sm mt-1">
+      {errors.logo}
+    </p>
+  )}
+</div>
+
+
+
+
+
 
         {/* Description */}
         <div>

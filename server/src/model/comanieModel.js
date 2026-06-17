@@ -12,6 +12,9 @@ const companieSchema = new Schema({
         type: String,
         required: true,
     },
+    logo: {
+        type: String,
+    },
     description: {
         type: String,
         required: true,

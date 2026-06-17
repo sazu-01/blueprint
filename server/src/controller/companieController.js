@@ -2,17 +2,25 @@
 
 import Company from "../model/comanieModel.js";
 import { errorResponse, successResponse } from "../helpers/response.js";
+import { UploadFileToCloudinary } from "../helpers/Cloudinary.js";
 
 const createCompanyController = async (req, res, next) => {
     try {
         // 1. Extract required fields
         const { name, legalName, description, industryVertical, businessActivity, interestedIndustries } = req.body;
-        
+
         // 2. Validate required fields
         if (!name || !legalName || !description || !industryVertical || !businessActivity || !interestedIndustries) {
             return errorResponse(res, {
                 statusCode: 400,
                 message: "All required fields must be provided"
+            });
+        }
+
+        if (!req.file) {
+            return errorResponse(res, {
+                statusCode: 400,
+                message: "Company logo is required",
             });
         }
 
@@ -25,17 +33,22 @@ const createCompanyController = async (req, res, next) => {
             });
         }
 
+        const uploadedLogo = await UploadFileToCloudinary(
+            req.file.path,
+            "blueprint/company-logos"
+        );
+
         // 4. Create new company
         const newCompany = new Company({
             name,
             legalName,
+            logo: uploadedLogo.secureUrl,
             description,
             industryVertical,
             businessActivity,
             interestedIndustries,
             createdBy: req.user._id,
 
-            
             // Optional fields (if provided)
             ...(req.body.country && { country: req.body.country }),
             ...(req.body.address && { address: req.body.address }),
@@ -51,9 +64,9 @@ const createCompanyController = async (req, res, next) => {
         const savedCompany = await newCompany.save();
 
 
-       // Populate createdBy with user info after save
-       const populatedCompany = await Company.findById(savedCompany._id)
-       .populate("createdBy", "name email");
+        // Populate createdBy with user info after save
+        const populatedCompany = await Company.findById(savedCompany._id)
+            .populate("createdBy", "name email");
 
         // 6. Return success response
         return successResponse(res, {
@@ -63,6 +76,7 @@ const createCompanyController = async (req, res, next) => {
                 companyId: savedCompany._id,
                 name: savedCompany.name,
                 legalName: savedCompany.legalName,
+                logo: savedCompany.logo,
                 industryVertical: savedCompany.industryVertical,
                 verificationStatus: savedCompany.verificationStatus,
                 createdBy: populatedCompany.createdBy,
@@ -72,7 +86,7 @@ const createCompanyController = async (req, res, next) => {
 
     } catch (error) {
         console.error("Error in createCompanyController:", error);
-        
+
         return errorResponse(res, {
             statusCode: 500,
             message: "Error creating company"
@@ -83,12 +97,12 @@ const createCompanyController = async (req, res, next) => {
 
 const getAllCompanies = async (req, res, next) => {
     try {
-        
+
         const companies = await Company.find({});
 
-        return successResponse(res,{
+        return successResponse(res, {
             statusCode: 200,
-            message : "return all the companies",
+            message: "return all the companies",
             payload: {
                 companies,
             }
@@ -117,8 +131,8 @@ const getCompanyByLegalName = async (req, res, next) => {
         }
 
         // 3. Find company and populate createdBy
-        const company = await Company.findOne({ 
-            legalName: legalName.trim() 
+        const company = await Company.findOne({
+            legalName: legalName.trim()
         }).populate("createdBy", "name email");
 
         // 4. If not found
