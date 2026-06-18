@@ -65,21 +65,15 @@ const Header = () => {
           ))}
         </div>
 
-        {isAuthenticated ? (
+        {isAuthenticated && UserCompany.length > 0 ? (
           <Link href={`/company/${UserCompany[0]?.legalName}`} className="flex items-center gap-2">
-            {UserCompany.length > 0 ? (
-              <span className="text-sm font-medium text-gray-700">
-                {UserCompany[0].name ?? UserCompany[0].legalName}
-              </span>
-            ) : (
-              <span className="text-sm text-gray-500">No company yet</span>
-            )}
+            <span className="text-sm font-medium text-gray-700">
+              {UserCompany[0].name ?? UserCompany[0].legalName}
+            </span>
           </Link>
-        ) : (
-          <div className="flex items-center gap-3">
-            ...
-          </div>
-        )}
+        ) :
+          <Link href="/register/company" className="block flex rounded-full bg-blue-600 py-2.5 text-center font-semibold text-white">Create a company</Link>
+        }
 
       </div>
 
