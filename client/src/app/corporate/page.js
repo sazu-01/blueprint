@@ -158,6 +158,8 @@ const CorporatePage = () => {
               <button className="px-4 py-2 rounded-lg border border-blue-600 text-blue-600 hover:bg-blue-50 font-medium">
                 View Profile
               </button>
+
+    
             </div>
           </div>
         </div>

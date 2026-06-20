@@ -71,10 +71,10 @@ const companieSchema = new Schema({
     },
 }, 
 { 
-    timestamps: true  // ✅ createdAt, updatedAt automatic
+    timestamps: true 
 });
 
 
-const Company = model("companies", companieSchema);
+const Company = model("Company", companieSchema);
 
 export default Company;

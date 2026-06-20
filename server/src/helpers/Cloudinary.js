@@ -29,22 +29,40 @@ export const DeleteFileFromCloudinary = async (folderName, publicId) => {
     }
 }
 
-export const UploadFileToCloudinary = async (
-  filePath,
-  folderName = "blueprint/company-logos"
+// export const UploadFileToCloudinary = async (
+//   filePath,
+//   folderName = "blueprint/company-logos",
+//   resourceType = "image" // default stays "image"
+// ) => {
+//   try {
+//     const result = await cloudinary.uploader.upload(filePath, {
+//       folder: folderName,
+//       resource_type: "image",
+//     });
+
+//     return {
+//       secureUrl: result.secure_url,
+//       publicId: result.public_id,
+//     };
+//   } catch (error) {
+//     throw error;
+//   }
+// };
+
+
+export const UploadBufferToCloudinary = (
+  buffer,
+  folderName = "blueprint/company-logos",
+  resourceType = "image"
 ) => {
-  try {
-    const result = await cloudinary.uploader.upload(filePath, {
-      folder: folderName,
-      resource_type: "image",
-    });
-
-    return {
-      secureUrl: result.secure_url,
-      publicId: result.public_id,
-    };
-  } catch (error) {
-    throw error;
-  }
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      { folder: folderName, resource_type: resourceType },
+      (error, result) => {
+        if (error) return reject(error);
+        resolve({ secureUrl: result.secure_url, publicId: result.public_id });
+      }
+    );
+    uploadStream.end(buffer);
+  });
 };
-

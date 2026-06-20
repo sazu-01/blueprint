@@ -2,7 +2,7 @@
 
 import Company from "../model/comanieModel.js";
 import { errorResponse, successResponse } from "../helpers/response.js";
-import { UploadFileToCloudinary } from "../helpers/Cloudinary.js";
+import { UploadBufferToCloudinary } from "../helpers/Cloudinary.js";
 
 const createCompanyController = async (req, res, next) => {
     try {
@@ -33,8 +33,8 @@ const createCompanyController = async (req, res, next) => {
             });
         }
 
-        const uploadedLogo = await UploadFileToCloudinary(
-            req.file.path,
+        const uploadedLogo = await UploadBufferToCloudinary(
+            req.file.buffer,
             "blueprint/company-logos"
         );
 
