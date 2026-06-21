@@ -5,7 +5,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import companieRoute from "./route/companieRoute.js";
 import proposalRoute from "./route/proposalRoute.js";
-
+import proposalTextRoute from "./route/proposalTextRoute.js";
 
 const app = express();
 
@@ -26,6 +26,7 @@ app.use(cookieParser());
 app.use("/api/auth", authRouter);
 app.use("/api",companieRoute);
 app.use("/api", proposalRoute);
+app.use("/api", proposalTextRoute);
 
 app.get("/", (req, res) => {
     res.status(200).send("welcome to server");
