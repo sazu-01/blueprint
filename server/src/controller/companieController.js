@@ -43,6 +43,7 @@ const createCompanyController = async (req, res, next) => {
             name,
             legalName,
             logo: uploadedLogo.secureUrl,
+            logoPublicId: uploadedLogo.publicId,
             description,
             industryVertical,
             businessActivity,
@@ -161,4 +162,108 @@ const getCompanyByLegalName = async (req, res, next) => {
     }
 };
 
-export { createCompanyController, getAllCompanies, getCompanyByLegalName };
+
+const UpdateCompanyController = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const userId = req.user._id;
+
+        const company = await Company.findById(id);
+        if (!company) {
+            return errorResponse(res, { statusCode: 404, message: "Company not found" });
+        }
+
+        // Only the creator can update
+        if (company.createdBy.toString() !== userId.toString()) {
+            return errorResponse(res, {
+                statusCode: 403,
+                message: "You are not authorized to update this company",
+            });
+        }
+
+        const {
+            name,
+            legalName,
+            description,
+            industryVertical,
+            businessActivity,
+            interestedIndustries,
+            country,
+            address,
+            companyType,
+            webLink,
+            companySize,
+            foundedYear,
+            fundingStaged,
+            officialDomain,
+        } = req.body;
+
+        // If legalName is being changed, make sure the new one isn't already taken
+        if (legalName && legalName !== company.legalName) {
+            const existing = await Company.findOne({ legalName, _id: { $ne: id } });
+            if (existing) {
+                return errorResponse(res, {
+                    statusCode: 409,
+                    message: "Company with this legal name already exists",
+                });
+            }
+            company.legalName = legalName;
+        }
+
+        // Handle logo replacement, if a new file was uploaded
+        if (req.file) {
+            const uploadedLogo = await UploadBufferToCloudinary(
+                req.file.buffer,
+                "blueprint/company-logos"
+            );
+
+            // Clean up the old logo on Cloudinary, if one exists
+            if (company.logoPublicId) {
+                await DeleteFileFromCloudinary("blueprint/company-logos", company.logoPublicId).catch((err) => {
+                    console.error("Failed to delete old logo from Cloudinary:", err);
+                    // Don't block the update if cleanup fails — just log it
+                });
+            }
+
+            company.logo = uploadedLogo.secureUrl;
+            company.logoPublicId = uploadedLogo.publicId;
+        }
+
+        // Required fields — only overwrite if explicitly provided
+        if (name !== undefined) company.name = name;
+        if (description !== undefined) company.description = description;
+        if (industryVertical !== undefined) company.industryVertical = industryVertical;
+        if (businessActivity !== undefined) company.businessActivity = businessActivity;
+        if (interestedIndustries !== undefined) company.interestedIndustries = interestedIndustries;
+
+        // Optional fields
+        if (country !== undefined) company.country = country;
+        if (address !== undefined) company.address = address;
+        if (companyType !== undefined) company.companyType = companyType;
+        if (webLink !== undefined) company.webLink = webLink;
+        if (companySize !== undefined) company.companySize = companySize;
+        if (foundedYear !== undefined) company.foundedYear = foundedYear;
+        if (fundingStaged !== undefined) company.fundingStaged = fundingStaged;
+        if (officialDomain !== undefined) company.officialDomain = officialDomain;
+
+        const updatedCompany = await company.save();
+
+        const populatedCompany = await Company.findById(updatedCompany._id)
+            .populate("createdBy", "name email");
+
+        return successResponse(res, {
+            statusCode: 200,
+            message: "Company updated successfully",
+            payload: { company: populatedCompany },
+        });
+    } catch (error) {
+        console.error("Error in UpdateCompanyController:", error);
+        return errorResponse(res, {
+            statusCode: 500,
+            message: "Error updating company",
+        });
+    }
+};
+
+
+export { createCompanyController, getAllCompanies, getCompanyByLegalName, UpdateCompanyController };

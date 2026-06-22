@@ -12,9 +12,6 @@ const companieSchema = new Schema({
         type: String,
         required: true,
     },
-    logo: {
-        type: String,
-    },
     description: {
         type: String,
         required: true,
@@ -33,6 +30,12 @@ const companieSchema = new Schema({
     },
     
     // OPTIONAL FIELDS
+    logo: {
+        type: String,
+    },
+    publicId:{
+        type: String,
+    },
     country: {
         type: String,
     },
@@ -41,6 +44,7 @@ const companieSchema = new Schema({
     },
     companyType: {
         type: String,
+        enum: ["Partnership", "Educational", "Privately held", "Government Agency", "Non Profit", "Public Company", "Self Employed", "Self Owned"]
     },
     webLink: {
         type: String,

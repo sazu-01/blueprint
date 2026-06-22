@@ -1,9 +1,11 @@
 "use client"
 import { useParams } from 'next/navigation';
+import Link from 'next/link';
 import useCompanyStore from '@/app/store/UseCompanieStore';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { FiCalendar, FiMapPin, FiUsers, FiBriefcase } from "react-icons/fi";
+import { MdOutlineArrowOutward } from "react-icons/md";
 import { RiVerifiedBadgeFill } from "react-icons/ri";
 import useAuthStore from '@/app/store/UseauthStore';
 import Logout from '@/app/layout/Logout';
@@ -22,7 +24,7 @@ const parseTagArray = (value) => {
 
 const TABS = [
     { id: "overview", label: "Overview" },
-    { id: "location", label: "Location" },
+    { id: "company-info", label: "Company info" },
 ];
 
 const CompanyProfilePage = () => {
@@ -80,7 +82,7 @@ const CompanyProfilePage = () => {
     if (!company) return <p>Company not found.</p>;
 
     return (
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-5xl mx-auto mt-5">
             {/* Profile card */}
             <div className='company-card flex gap-4 p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow'>
                 <div className='shrink-0'>
@@ -172,11 +174,10 @@ const CompanyProfilePage = () => {
                                 key={tab.id}
                                 type="button"
                                 onClick={() => handleTabClick(tab.id)}
-                                className={`relative text-left px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                                    activeTab === tab.id
-                                        ? "bg-blue-50 text-blue-600"
-                                        : "text-slate-500 hover:bg-slate-50 hover:text-slate-700"
-                                }`}
+                                className={`relative text-left px-3 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === tab.id
+                                    ? "bg-blue-50 text-blue-600"
+                                    : "text-slate-500 hover:bg-slate-50 hover:text-slate-700"
+                                    }`}
                             >
                                 {activeTab === tab.id && (
                                     <span className="absolute left-0 top-1 bottom-1 w-0.5 bg-blue-600 rounded-full" />
@@ -184,18 +185,29 @@ const CompanyProfilePage = () => {
                                 {tab.label}
                             </button>
                         ))}
+
+                        <Link
+                            className="relative inline-flex items-center gap-1 text-slate-500"
+                            href="/company/update"
+                        >
+                            <p className="text-left pl-3 py-2 rounded-md text-sm font-medium  underline">
+                                Edit Company
+                            </p>
+
+                            <MdOutlineArrowOutward className='top-2 absolute left-25' />
+                        </Link>
+
                     </div>
 
-                  {user?._id?.toString() === company?.createdBy?.toString() && <Logout />}
+                    {user?._id?.toString() === company?.createdBy?.toString() && <Logout />}
                 </div>
 
                 {/* Right content sections */}
                 <div className="flex-1 min-w-0 space-y-10 pb-10">
-                    <section
-                        id="overview"
+                    <section id="overview"
                         data-tab-id="overview"
                         ref={(el) => (sectionRefs.current.overview = el)}
-                        className="space-y-2  min-h-[600px]"
+                        className="space-y-2"
                     >
                         <h3 className="text-base font-semibold text-slate-900">Overview</h3>
                         <p className="text-sm text-slate-600 leading-relaxed">
@@ -203,28 +215,179 @@ const CompanyProfilePage = () => {
                         </p>
                     </section>
 
+
+
                     <section
-                        id="location"
-                        data-tab-id="location"
-                        ref={(el) => (sectionRefs.current.location = el)}
-                        className="space-y-2  min-h-[600px]"
+                        id="company-info"
+                        data-tab-id="company-info"
+                        ref={(el) => (sectionRefs.current["company-info"] = el)}
+                        className="space-y-6"
                     >
-                        <h3 className="text-base font-semibold text-slate-900">Location</h3>
-                        <div className="flex gap-4 text-sm">
+                        <h3 className="text-base font-semibold text-slate-900">Company Info</h3>
+
+                        <div className="grid grid-cols-2 gap-y-5 gap-x-4 text-sm">
                             <div>
-                                <p className="text-xs text-slate-400 uppercase tracking-wide">City</p>
-                                <p className="text-slate-700 font-medium">{company.city}</p>
+                                <p className="text-xs text-slate-400 uppercase tracking-wide">
+                                    Legal Name
+                                </p>
+                                <p className="text-slate-700 font-medium">
+                                    {company.legalName || "—"}
+                                </p>
                             </div>
+
                             <div>
-                                <p className="text-xs text-slate-400 uppercase tracking-wide">Country</p>
-                                <p className="text-slate-700 font-medium">{company.country}</p>
+                                <p className="text-xs text-slate-400 uppercase tracking-wide">
+                                    Country
+                                </p>
+                                <p className="text-slate-700 font-medium">
+                                    {company.country || "—"}
+                                </p>
+                            </div>
+
+                            <div>
+                                <p className="text-xs text-slate-400 uppercase tracking-wide">
+                                    Address
+                                </p>
+                                <p className="text-slate-700 font-medium">
+                                    {company.address || "—"}
+                                </p>
+                            </div>
+
+                            <div>
+                                <p className="text-xs text-slate-400 uppercase tracking-wide">
+                                    Company Type
+                                </p>
+                                <p className="text-slate-700 font-medium">
+                                    {company.companyType || "—"}
+                                </p>
+                            </div>
+
+                            <div>
+                                <p className="text-xs text-slate-400 uppercase tracking-wide">
+                                    Company Size
+                                </p>
+                                <p className="text-slate-700 font-medium">
+                                    {company.companySize || "—"}
+                                </p>
+                            </div>
+
+                            <div>
+                                <p className="text-xs text-slate-400 uppercase tracking-wide">
+                                    Founded Year
+                                </p>
+                                <p className="text-slate-700 font-medium">
+                                    {company.foundedYear || "—"}
+                                </p>
+                            </div>
+
+                            <div>
+                                <p className="text-xs text-slate-400 uppercase tracking-wide">
+                                    Funding Stage
+                                </p>
+                                <p className="text-slate-700 font-medium">
+                                    {company.fundingStaged || "—"}
+                                </p>
+                            </div>
+
+                            <div>
+                                <p className="text-xs text-slate-400 uppercase tracking-wide">
+                                    Official Domain
+                                </p>
+                                <p className="text-slate-700 font-medium">
+                                    {company.officialDomain || "—"}
+                                </p>
+                            </div>
+
+                            <div>
+                                <p className="text-xs text-slate-400 uppercase tracking-wide">
+                                    Web Link
+                                </p>
+
+                                {company.webLink ? (
+                                    <a
+                                        href={company.webLink}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-blue-600 font-medium hover:underline break-all"
+                                    >
+                                        {company.webLink}
+                                    </a>
+                                ) : (
+                                    <p className="text-slate-700 font-medium">—</p>
+                                )}
+                            </div>
+
+                            <div>
+                                <p className="text-xs text-slate-400 uppercase tracking-wide">
+                                    Verification Status
+                                </p>
+                                <p className="text-slate-700 font-medium">
+                                    {company.verificationStatus || "—"}
+                                </p>
                             </div>
                         </div>
-                    </section>
-                    
 
-                   
-                    
+                        {/* Array fields */}
+                        <div className="space-y-4 pt-2">
+                            {parseTagArray(company.industryVertical).length > 0 && (
+                                <div>
+                                    <p className="text-xs text-slate-400 uppercase tracking-wide mb-1.5">
+                                        Industry Vertical
+                                    </p>
+
+                                    <div className="flex flex-wrap gap-1.5">
+                                        {parseTagArray(company.industryVertical).map((tag, i) => (
+                                            <span
+                                                key={i}
+                                                className="px-2.5 py-1 text-xs font-medium rounded-full bg-slate-100 text-slate-700 border border-slate-200"
+                                            >
+                                                {tag}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {parseTagArray(company.businessActivity).length > 0 && (
+                                <div>
+                                    <p className="text-xs text-slate-400 uppercase tracking-wide mb-1.5">
+                                        Business Activity
+                                    </p>
+
+                                    <div className="flex flex-wrap gap-1.5">
+                                        {parseTagArray(company.businessActivity).map((tag, i) => (
+                                            <span
+                                                key={i}
+                                                className="px-2.5 py-1 text-xs font-medium rounded-full bg-blue-50 text-blue-700 border border-blue-100"
+                                            >
+                                                {tag}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {parseTagArray(company.interestedIndustries).length > 0 && (
+                                <div>
+                                    <p className="text-xs text-slate-400 uppercase tracking-wide mb-1.5">
+                                        Interested Industries
+                                    </p>
+
+                                    <div className="flex flex-wrap gap-1.5">
+                                        {parseTagArray(company.interestedIndustries).map((tag, i) => (
+                                            <span
+                                                key={i}
+                                                className="px-2.5 py-1 text-xs font-medium rounded-full bg-green-50 text-green-700 border border-green-100"
+                                            >
+                                                {tag}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </section>
+
                 </div>
 
             </div>

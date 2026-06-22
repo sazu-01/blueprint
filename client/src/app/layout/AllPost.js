@@ -5,7 +5,8 @@ import { FiBriefcase, FiClock, FiEdit2 } from "react-icons/fi";
 import usePostStore from '../store/UsePostStore';
 import useAuthStore from '../store/UseauthStore';
 import useCompanyStore from '../store/UseCompanieStore';
-// import CreatePost from "../la"
+import Link from 'next/link';
+
 
 const postTypeStyles = {
   Partnership: "bg-blue-50 text-blue-700",
@@ -56,26 +57,14 @@ const AllPost = () => {
     (c) => c.createdBy?.toString() === user?._id?.toString()
   );
 
-  // const handlePostSuccess = () => {
-  //   setShowCompose(false);
-  //   setPage(1);
-  //   fetchAllPosts({ page: 1 });
-  // };
 
   return (
     <div className="grid grid-cols-12 gap-4 max-w-7xl mx-auto pb-16 mt-5 ">
         <div className='col-span-12 lg:col-span-7 ml-8'>
-      {/* Compose trigger / inline box */}
-      {showCompose ? (
-        <div className="mb-6">
-          {/* <CreatePost
-            onSuccess={handlePostSuccess}
-            onCancel={() => setShowCompose(false)}
-          /> */}
-        </div>
-      ) : (
-        <button
-          onClick={() => setShowCompose(true)}
+
+
+        <Link 
+          href={`/proposal/new`}
           className="w-full flex items-center gap-3 bg-white border border-slate-200 rounded-2xl shadow-sm px-5 py-4 mb-6 hover:border-blue-300 transition-colors text-left"
         >
           <Image
@@ -88,8 +77,8 @@ const AllPost = () => {
           <span className="text-sm text-slate-400">
             Share an update, opportunity, or what you're looking for...
           </span>
-        </button>
-      )}
+        </Link>
+ 
 
       {/* Loading */}
       {isLoading && posts.length === 0 && (
