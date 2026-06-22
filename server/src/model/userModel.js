@@ -16,6 +16,10 @@ const UserSchema = new Schema(
             select: false,
         },
 
+        position: {
+            type: String,
+        },
+
         isVerified: {
             type: Boolean,
             default: false,

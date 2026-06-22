@@ -7,6 +7,7 @@ import companieRoute from "./route/companieRoute.js";
 import proposalRoute from "./route/proposalRoute.js";
 import proposalTextRoute from "./route/proposalTextRoute.js";
 import postRoute from "./route/postRoute.js";
+import userRoute from "./route/userRoute.js";
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use(cookieParser());
 
 //routes
 app.use("/api/auth", authRouter);
+app.use("/api", userRoute);
 app.use("/api", companieRoute);
 app.use("/api", proposalRoute);
 app.use("/api", proposalTextRoute);
