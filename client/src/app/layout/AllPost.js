@@ -56,15 +56,15 @@ const AllPost = () => {
     (c) => c.createdBy?.toString() === user?._id?.toString()
   );
 
-  const handlePostSuccess = () => {
-    setShowCompose(false);
-    setPage(1);
-    fetchAllPosts({ page: 1 });
-  };
+  // const handlePostSuccess = () => {
+  //   setShowCompose(false);
+  //   setPage(1);
+  //   fetchAllPosts({ page: 1 });
+  // };
 
   return (
-    <div className="max-w-2xl mx-auto pb-16">
-
+    <div className="grid grid-cols-12 gap-4 max-w-7xl mx-auto pb-16 mt-5 ">
+        <div className='col-span-12 lg:col-span-7 ml-8'>
       {/* Compose trigger / inline box */}
       {showCompose ? (
         <div className="mb-6">
@@ -115,7 +115,7 @@ const AllPost = () => {
       )}
 
       {/* Feed */}
-      <div className="space-y-4">
+      <div className="space-y-4 ">
         {posts.map((post) => {
           const isMine = post.author?._id?.toString() === user?._id?.toString();
 
@@ -205,6 +205,8 @@ const AllPost = () => {
           </button>
         </div>
       )}
+      </div>
+      
     </div>
   );
 };

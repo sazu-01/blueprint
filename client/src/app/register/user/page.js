@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-
+import Link from "next/link";
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 
@@ -162,12 +162,12 @@ const UserRegisterPage = () => {
 
             <div className="my-5 h-px bg-slate-200" />
 
-            <a
+            <Link
               className="mx-auto flex h-11 w-fit items-center justify-center rounded-md border border-slate-200 px-5 text-sm font-semibold text-primary transition hover:bg-primary/5"
-              href="#"
+              href="/login"
             >
               Already have an account?
-            </a>
+            </Link>
           </form>
         </div>
       </section>

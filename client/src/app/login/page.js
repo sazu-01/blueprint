@@ -4,6 +4,8 @@ import { useState } from "react";
 import Image from 'next/image';
 import { useRouter } from "next/navigation";
 import useAuthStore from "../store/UseauthStore.js";
+import Link from "next/link";
+
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 if (!apiBaseUrl) {
@@ -107,11 +109,10 @@ const handleSubmit = async (event) => {
           >
             <div className="mb-5 text-center">
               <h2 className="text-2xl font-bold text-slate-950">
-                Create a new account
+                Log in to account
               </h2>
               <p className="mt-1 text-sm text-slate-500">
-                Create an account to network, collaborate, propose, and close
-                deals
+                Login to manage proposals, collaborate with partners, and track deals.
               </p>
             </div>
 
@@ -163,7 +164,7 @@ const handleSubmit = async (event) => {
             )}
 
             <p className="mt-4 text-xs leading-5 text-slate-500">
-              By signing up, you agree to Blueprint&apos;s terms and privacy policy.
+              By signing, you agree to Blueprint&apos;s terms and privacy policy.
             </p>
 
             <button
@@ -176,12 +177,12 @@ const handleSubmit = async (event) => {
 
             <div className="my-5 h-px bg-slate-200" />
 
-            <a
+            <Link
               className="mx-auto flex h-11 w-fit items-center justify-center rounded-md border border-slate-200 px-5 text-sm font-semibold text-primary transition hover:bg-primary/5"
-              href="#"
+              href="/register/user"
             >
-              Already have an account?
-            </a>
+              Didn't have an account?
+            </Link>
           </form>
         </div>
       </section>
