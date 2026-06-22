@@ -64,7 +64,7 @@ const Header = () => {
             </Link>
           ))}
         </div>
-
+          <Link href="/post">Create A Post</Link>
         {isAuthenticated && UserCompany.length > 0 ? (
           <Link href={`/company/${UserCompany[0]?.legalName}`} className="flex items-center gap-2">
             <span className="text-sm font-medium text-gray-700">

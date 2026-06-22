@@ -1,9 +1,10 @@
+import AllPost from "./layout/AllPost";
 
 
 export default function Home() {
   return (
     <div className="">
-           Hello World 
+         <AllPost />
     </div>
   );
 }
