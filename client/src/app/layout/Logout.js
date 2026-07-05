@@ -30,14 +30,14 @@ const Logout = () => {
   };
 
   return (
-    <div>
+
       <button
         onClick={handleLogout}
-        className='fixed bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer'
+        className='w-[102px] bg-blue-500 hover:bg-blue-700 text-white font-bold text-sm py-2 px-4 rounded cursor-pointer mt-2 ml-2'
       >
         Logout
       </button>
-    </div>
+
   );
 };
 

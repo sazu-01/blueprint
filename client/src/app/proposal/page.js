@@ -28,6 +28,8 @@ const ProposalPage = () => {
     (c) => c.createdBy?.toString() === user?._id?.toString()
   );
 
+  
+  
   useEffect(() => {
     if (myCompany?._id) {
       fetchCompanyProposals(myCompany._id);
@@ -50,7 +52,25 @@ const ProposalPage = () => {
     );
   }
 
-  if (!proposals || proposals.length === 0) {
+ 
+  if(user === null){
+    return <div>
+      <Link href="/login" className="cursor-pointer font-bold inline-flex items-center justify-center px-4 py-2 text-base leading-6 text-white whitespace-no-wrap bg-blue-600 border border-blue-700 rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" data-rounded="rounded-md" data-primary="blue-600" data-primary-reset="{}">
+         Login
+        </Link>
+        <span></span>
+    </div>
+  }
+
+  if(myCompany === undefined) {
+    return <div className="flex h-[80vh] items-center justify-center">
+      <Link href="/register/company" className="cursor-pointer font-bold inline-flex items-center justify-center px-4 py-2 text-base leading-6 text-white whitespace-no-wrap bg-blue-600 border border-blue-700 rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" data-rounded="rounded-md" data-primary="blue-600" data-primary-reset="{}">
+         + Create Company
+        </Link>
+    </div>
+  }
+
+    if (!proposals || proposals.length === 0) {
     return (
       <div className="flex h-[80vh] items-center justify-center">
         <Link href="/proposal/new" className="cursor-pointer font-bold inline-flex items-center justify-center px-4 py-2 text-base leading-6 text-white whitespace-no-wrap bg-blue-600 border border-blue-700 rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" data-rounded="rounded-md" data-primary="blue-600" data-primary-reset="{}">

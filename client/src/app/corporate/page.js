@@ -3,13 +3,15 @@
 import React, { useEffect } from "react";
 import Image from "next/image";
 import useCompanyStore from "../store/UseCompanieStore";
-import Link from "next/link";
+import Link from "next/link";Link
 import { FiCalendar, FiMapPin, FiUsers, FiBriefcase } from "react-icons/fi";
 import { RiVerifiedBadgeFill } from "react-icons/ri";
+import useAuthStore from "../store/UseauthStore";
 
 const CorporatePage = () => {
   const { companies, fetchAllCompanies, isLoading, error } =
     useCompanyStore();
+  const { user } = useAuthStore();  
 
   useEffect(() => {
     fetchAllCompanies();
@@ -33,6 +35,10 @@ const CorporatePage = () => {
     return value;
   };
 
+    const otherCompanies = companies.filter(
+    (company) => company.createdBy?.toString() !== user?._id?.toString()
+  );
+
   if (isLoading) {
     return (
       <div className="flex justify-center py-10">
@@ -51,7 +57,7 @@ const CorporatePage = () => {
 
   return (
     <div className="max-w-5xl mx-auto p-4 space-y-4">
-      {companies?.map((company) => (
+      {otherCompanies?.map((company) => (
         <div
           key={company._id}
           className="bg-white border border-slate-200 rounded-xl p-4 hover:shadow-md transition-all"
@@ -133,10 +139,10 @@ const CorporatePage = () => {
               </div>
 
               {/* Looking For */}
-              <div className="mt-3">
-                <p className="text-xs font-semibold text-slate-500 mb-2 uppercase">
+              <div className="mt-3 flex items-center">
+                <div className="text-xs font-semibold text-slate-500 mb-2 uppercase m-0">
                   Looking For
-                </p>
+                </div>
 
                 <div className="flex flex-wrap gap-2">
                   {parseTagArray(company.businessActivity).map(
@@ -155,9 +161,9 @@ const CorporatePage = () => {
 
             {/* Action */}
             <div className="hidden md:flex items-start">
-              <button className="px-4 py-2 rounded-lg border border-blue-600 text-blue-600 hover:bg-blue-50 font-medium">
+              <Link href={`/company/${company.legalName}`} className="px-4 py-2 rounded-lg border border-blue-600 text-blue-600 hover:bg-blue-50 font-medium">
                 View Profile
-              </button>
+              </Link>
 
     
             </div>

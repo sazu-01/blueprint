@@ -196,10 +196,10 @@ const CompanyProfilePage = () => {
 
                             <MdOutlineArrowOutward className='top-2 absolute left-25' />
                         </Link>
-
+                        {user?._id?.toString() === company?.createdBy?.toString() && <Logout />}
                     </div>
 
-                    {user?._id?.toString() === company?.createdBy?.toString() && <Logout />}
+
                 </div>
 
                 {/* Right content sections */}
