@@ -9,6 +9,7 @@ import { MdOutlineArrowOutward } from "react-icons/md";
 import { RiVerifiedBadgeFill } from "react-icons/ri";
 import useAuthStore from '@/app/store/UseauthStore';
 import Logout from '@/app/layout/Logout';
+import PostsByCompany from '@/app/layout/PostsByCompany';
 
 const parseTagArray = (value) => {
     if (!Array.isArray(value)) return [];
@@ -25,6 +26,7 @@ const parseTagArray = (value) => {
 const TABS = [
     { id: "overview", label: "Overview" },
     { id: "company-info", label: "Company info" },
+    { id: "opportunity", label: "Opppotunity"}
 ];
 
 const CompanyProfilePage = () => {
@@ -185,17 +187,18 @@ const CompanyProfilePage = () => {
                                 {tab.label}
                             </button>
                         ))}
-
-                        <Link
+   { user?._id?.toString() === company?.createdBy?.toString() &&                         <Link
                             className="relative inline-flex items-center gap-1 text-slate-500"
                             href="/company/update"
                         >
-                            <p className="text-left pl-3 py-2 rounded-md text-sm font-medium  underline">
+                        
+                           <p className="text-left pl-3 py-2 rounded-md text-sm font-medium  underline">
                                 Edit Company
                             </p>
 
                             <MdOutlineArrowOutward className='top-2 absolute left-25' />
-                        </Link>
+                        </Link>} 
+
                         {user?._id?.toString() === company?.createdBy?.toString() && <Logout />}
                     </div>
 
@@ -386,6 +389,15 @@ const CompanyProfilePage = () => {
                                 </div>
                             )}
                         </div>
+                    </section>
+
+                <section id="opportunity"
+                        data-tab-id="opportunity"
+                        ref={(el) => (sectionRefs.current.opportunity = el)}
+                        className="space-y-2"
+                    >
+                        <h3 className="text-base font-semibold text-slate-900">Oportunities</h3>
+                         <PostsByCompany company={company} />
                     </section>
 
                 </div>

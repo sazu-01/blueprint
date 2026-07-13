@@ -64,7 +64,7 @@ const AllPost = () => {
 
 
         <Link 
-          href={`/proposal/new`}
+          href={`/post`}
           className="w-full flex items-center gap-3 bg-white border border-slate-200 rounded-2xl shadow-sm px-5 py-4 mb-6 hover:border-blue-300 transition-colors text-left"
         >
           <Image

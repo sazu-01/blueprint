@@ -63,6 +63,33 @@ const usePostStore = create((set, get) => ({
         }
     },
 
+    fetchPostsByCompany: async (companyId) => {
+    set({ isLoading: true, error: null });
+    try {
+        const response = await fetch(
+            `${apiBaseUrl}/post/all-post?company=${companyId}`,
+            {
+                method: "GET",
+                credentials: "include",
+            }
+        );
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.message || "Failed to fetch posts");
+        }
+        // filter client-side since backend doesn't have company filter yet
+        const companyPosts = data.payload.posts.filter(
+            (p) => p.company?._id?.toString() === companyId
+        );
+        set({
+            posts: companyPosts,
+            isLoading: false,
+        });
+    } catch (error) {
+        set({ error: error.message, isLoading: false });
+    }
+},
+
     // Create a new post
     createPost: async ({ company, content, postType, relatedIndustry }) => {
         set({ error: null });
