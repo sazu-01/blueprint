@@ -11,6 +11,7 @@ cloudinary.config({
   api_secret: CLOUDE_API_SECRET,
 });
 
+
 export const DeleteFileFromCloudinary = async (folderName, publicId) => {
     try {
         const response = await cloudinary.uploader.destroy(`${folderName}/${publicId}`);
@@ -28,26 +29,6 @@ export const DeleteFileFromCloudinary = async (folderName, publicId) => {
         throw error;
     }
 }
-
-// export const UploadFileToCloudinary = async (
-//   filePath,
-//   folderName = "blueprint/company-logos",
-//   resourceType = "image" // default stays "image"
-// ) => {
-//   try {
-//     const result = await cloudinary.uploader.upload(filePath, {
-//       folder: folderName,
-//       resource_type: "image",
-//     });
-
-//     return {
-//       secureUrl: result.secure_url,
-//       publicId: result.public_id,
-//     };
-//   } catch (error) {
-//     throw error;
-//   }
-// };
 
 
 export const UploadBufferToCloudinary = (

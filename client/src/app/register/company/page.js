@@ -18,7 +18,7 @@ const CompanyRegisterPage = () => {
     industryVertical: [],
     businessActivity: [],
     interestedIndustries: [],
-     logo: null,
+    logo: null,
   });
 
   const [errors, setErrors] = useState({});
@@ -121,29 +121,6 @@ const CompanyRegisterPage = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-const companyData = new FormData();
-
-companyData.append("logo", formData.logo);
-
-companyData.append("name", formData.name);
-companyData.append("legalName", formData.legalName);
-companyData.append("description", formData.description);
-
-companyData.append(
-  "industryVertical",
-  JSON.stringify(formData.industryVertical)
-);
-
-companyData.append(
-  "businessActivity",
-  JSON.stringify(formData.businessActivity)
-);
-
-companyData.append(
-  "interestedIndustries",
-  JSON.stringify(formData.interestedIndustries)
-);
-
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -151,6 +128,31 @@ companyData.append(
     if (!validateForm()) {
       return;
     }
+
+
+    const companyData = new FormData();
+
+    companyData.append("logo", formData.logo);
+
+    companyData.append("name", formData.name);
+    companyData.append("legalName", formData.legalName);
+    companyData.append("description", formData.description);
+
+    companyData.append(
+      "industryVertical",
+      JSON.stringify(formData.industryVertical)
+    );
+
+    companyData.append(
+      "businessActivity",
+      JSON.stringify(formData.businessActivity)
+    );
+
+    companyData.append(
+      "interestedIndustries",
+      JSON.stringify(formData.interestedIndustries)
+    );
+
 
     setLoading(true);
     setSuccessMessage('');
@@ -161,12 +163,12 @@ companyData.append(
         // headers: {
         //   'Content-Type': 'application/json',
         // },
-        
+
         credentials: "include",
-         body: companyData,
+        body: companyData,
         // body: JSON.stringify(formData),
 
-        
+
       });
 
       const data = await response.json();
@@ -184,7 +186,7 @@ companyData.append(
         // Optional: Redirect after 2 seconds
         setTimeout(() => {
           // Redirect to company dashboard or home
-          window.location.href = `/`; 
+          window.location.href = `/`;
         }, 2000);
       } else {
         setErrors({ submit: data.message || 'Error registering company' });
@@ -199,7 +201,7 @@ companyData.append(
 
   return (
 
-    
+
     <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-8">
       {/* Success Message */}
       {successMessage && (
@@ -265,32 +267,32 @@ companyData.append(
 
 
         <div>
-  <label
-    htmlFor="logo"
-    className="block text-sm font-semibold text-slate-900 mb-2"
-  >
-    Company Logo <span className="text-red-500">*</span>
-  </label>
+          <label
+            htmlFor="logo"
+            className="block text-sm font-semibold text-slate-900 mb-2"
+          >
+            Company Logo <span className="text-red-500">*</span>
+          </label>
 
-  <input
-    type="file"
-    id="logo"
-    accept="image/*"
-    onChange={(e) =>
-      setFormData((prev) => ({
-        ...prev,
-        logo: e.target.files?.[0] || null,
-      }))
-    }
-    className="w-full px-4 py-2 border border-slate-300 rounded-lg"
-  />
+          <input
+            type="file"
+            id="logo"
+            accept="image/*"
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                logo: e.target.files?.[0] || null,
+              }))
+            }
+            className="w-full px-4 py-2 border border-slate-300 rounded-lg"
+          />
 
-  {errors.logo && (
-    <p className="text-red-600 text-sm mt-1">
-      {errors.logo}
-    </p>
-  )}
-</div>
+          {errors.logo && (
+            <p className="text-red-600 text-sm mt-1">
+              {errors.logo}
+            </p>
+          )}
+        </div>
 
 
 

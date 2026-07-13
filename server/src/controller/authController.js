@@ -38,7 +38,15 @@ const RequestUserRegistration = async (req, res, next) => {
             });
         }
 
-        const isUserExist = await User.findOne({ email: normalizedEmail });
+        const user = await User.findOne({ email: normalizedEmail });
+
+        if(user.isVerified){
+            return errorResponse(res, {
+                statusCode : 300,
+                message: "user is already registered, please login"
+            })
+        }
+
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -100,7 +108,7 @@ const ActivateUser = async (req, res, next) => {
         }
 
         const user = await User.findOne({ email: normalizedEmail }).select("+otp +otpExpiresAt");
-
+        
         if (!user) {
             return errorResponse(res, {
                 statusCode: 400,
@@ -241,6 +249,15 @@ const LogoutUser = (req, res, next) => {
         next(error);
     }
 };
+
+
+const protectedRoute = async (req, res, next) => {
+    try {
+        
+    } catch (error) {
+        
+    }
+}
 
 
 
