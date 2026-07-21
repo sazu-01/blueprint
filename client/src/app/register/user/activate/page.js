@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -18,7 +18,7 @@ const emailFieldClassName =
 
 
 const UserActivatePage = () => {
-  const searchParams = useSearchParams();
+
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [message, setMessage] = useState(null);
@@ -26,13 +26,10 @@ const UserActivatePage = () => {
 
   const route = useRouter();
 
-    useEffect(() => {
-    const emailFromUrl = searchParams.get("email");
-
-    if (emailFromUrl) {
-      setEmail(emailFromUrl);
-    }
-  }, [searchParams]);
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setEmail(params.get("email") || "");
+  }, []);
 
 
   const handleSubmit = async (event) => {
@@ -154,11 +151,10 @@ const UserActivatePage = () => {
 
           {message && (
             <p
-              className={`mt-4 rounded-md px-3 py-2 text-sm ${
-                message.type === "success"
+              className={`mt-4 rounded-md px-3 py-2 text-sm ${message.type === "success"
                   ? "bg-emerald-50 text-emerald-700"
                   : "bg-red-50 text-red-700"
-              }`}
+                }`}
               role="status"
               aria-live="polite"
             >
