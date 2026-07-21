@@ -1,7 +1,7 @@
 
 
 "use client";
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -137,21 +137,9 @@ const CompanyRegisterPage = () => {
     companyData.append("name", formData.name);
     companyData.append("legalName", formData.legalName);
     companyData.append("description", formData.description);
-
-    companyData.append(
-      "industryVertical",
-      JSON.stringify(formData.industryVertical)
-    );
-
-    companyData.append(
-      "businessActivity",
-      JSON.stringify(formData.businessActivity)
-    );
-
-    companyData.append(
-      "interestedIndustries",
-      JSON.stringify(formData.interestedIndustries)
-    );
+    formData.industryVertical.forEach(v => companyData.append("industryVertical", v));
+    formData.businessActivity.forEach(v => companyData.append("businessActivity", v));
+    formData.interestedIndustries.forEach(v => companyData.append("interestedIndustries", v));
 
 
     setLoading(true);
@@ -160,15 +148,8 @@ const CompanyRegisterPage = () => {
     try {
       const response = await fetch(`${apiBaseUrl}/register/company`, {
         method: 'POST',
-        // headers: {
-        //   'Content-Type': 'application/json',
-        // },
-
         credentials: "include",
         body: companyData,
-        // body: JSON.stringify(formData),
-
-
       });
 
       const data = await response.json();
@@ -185,7 +166,6 @@ const CompanyRegisterPage = () => {
         });
         // Optional: Redirect after 2 seconds
         setTimeout(() => {
-          // Redirect to company dashboard or home
           window.location.href = `/`;
         }, 2000);
       } else {

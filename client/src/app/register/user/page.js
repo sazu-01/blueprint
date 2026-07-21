@@ -4,6 +4,8 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
+
+// API Base URL 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 
@@ -27,6 +29,8 @@ const UserRegisterPage = () => {
       [name]: value,
     }));
   };
+
+
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -61,7 +65,6 @@ const UserRegisterPage = () => {
         throw error;
       }
   
-      sessionStorage.setItem("pendingRegistrationEmail", email);
       router.push(`/register/user/activate?email=${encodeURIComponent(email)}`);
     } catch (error) {
       setMessage({

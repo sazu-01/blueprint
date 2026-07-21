@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -15,25 +15,26 @@ const fieldClassName =
 const emailFieldClassName =
   "h-12 w-full rounded-md border border-slate-300 bg-white px-4 text-[15px] text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-primary focus:ring-primary/15";
 
-const getInitialEmail = () => {
-  if (typeof window === "undefined") {
-    return "";
-  }
 
-  const params = new URLSearchParams(window.location.search);
-  const emailFromUrl = params.get("email");
-  const emailFromStorage = sessionStorage.getItem("pendingRegistrationEmail");
-
-  return emailFromUrl || emailFromStorage || "";
-};
 
 const UserActivatePage = () => {
-  const [email, setEmail] = useState(getInitialEmail);
+  const searchParams = useSearchParams();
+  const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [message, setMessage] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const route = useRouter();
+
+    useEffect(() => {
+    const emailFromUrl = searchParams.get("email");
+
+    if (emailFromUrl) {
+      setEmail(emailFromUrl);
+    }
+  }, [searchParams]);
+
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setMessage(null);
@@ -81,7 +82,6 @@ const UserActivatePage = () => {
         throw new Error(data.message || "Registration failed. Please try again.");
       }
 
-      sessionStorage.removeItem("pendingRegistrationEmail");
       setOtp("");
       setMessage({
         type: "success",

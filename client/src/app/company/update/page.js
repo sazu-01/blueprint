@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { FiX } from "react-icons/fi";
 import useAuthStore from '@/app/store/UseauthStore';
@@ -20,13 +19,26 @@ const COMPANY_TYPES = [
 const REQUIRED_FIELDS = ["name", "legalName", "description", "industryVertical", "businessActivity", "interestedIndustries"];
 const OPTIONAL_FIELDS = ["country", "address", "companyType", "webLink", "companySize", "foundedYear", "fundingStaged", "officialDomain"];
 
+const parseTagArray = (value) => {
+    if (!Array.isArray(value)) return [];
+    if (value.length === 1 && typeof value[0] === 'string' && value[0].startsWith('[')) {
+        try {
+            return JSON.parse(value[0]);
+        } catch {
+            return value;
+        }
+    }
+    return value;
+};
+
+
 const buildFormState = (company) => ({
   name: company?.name || "",
   legalName: company?.legalName || "",
   description: company?.description || "",
-  industryVertical: company?.industryVertical || [],
-  businessActivity: company?.businessActivity || [],
-  interestedIndustries: company?.interestedIndustries || [],
+  industryVertical: parseTagArray(company?.industryVertical) || [],
+  businessActivity: parseTagArray(company?.businessActivity) || [],
+  interestedIndustries: parseTagArray(company?.interestedIndustries) || [],
   country: company?.country || "",
   address: company?.address || "",
   companyType: company?.companyType || "",
@@ -78,7 +90,7 @@ const TagInput = ({ label, values, onChange }) => {
 };
 
 const CompanyUpdatePage = () => {
-  const router = useRouter();
+
   const { user } = useAuthStore();
   const { companies, fetchAllCompanies, updateCompany, isLoading, error } = useCompanyStore();
 

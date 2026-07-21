@@ -40,7 +40,7 @@ const RequestUserRegistration = async (req, res, next) => {
 
         const user = await User.findOne({ email: normalizedEmail });
 
-        if(user.isVerified){
+        if(user?.isVerified){
             return errorResponse(res, {
                 statusCode : 300,
                 message: "user is already registered, please login"
@@ -66,7 +66,7 @@ const RequestUserRegistration = async (req, res, next) => {
                 otpExpiresAt: expiresAt,
                 isVerified: false,
             },
-            { returnDocument: "after", upsert: true }
+            { upsert: true }
         );
 
         try {
