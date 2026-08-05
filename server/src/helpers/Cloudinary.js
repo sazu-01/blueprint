@@ -34,11 +34,24 @@ export const DeleteFileFromCloudinary = async (folderName, publicId) => {
 export const UploadBufferToCloudinary = (
   buffer,
   folderName = "blueprint/company-logos",
-  resourceType = "image"
+  resourceType = "image",
+  originalName = null
 ) => {
   return new Promise((resolve, reject) => {
+    const uploadOptions = {
+      folder: folderName,
+      resource_type: resourceType,
+      access_mode: "public",
+    };
+
+    if (originalName) {
+      const safeName = originalName.replace(/[^a-zA-Z0-9._-]/g, "_");
+      uploadOptions.public_id = safeName;
+      uploadOptions.unique_filename = true;
+    }
+
     const uploadStream = cloudinary.uploader.upload_stream(
-      { folder: folderName, resource_type: resourceType },
+      uploadOptions,
       (error, result) => {
         if (error) return reject(error);
         resolve({ secureUrl: result.secure_url, publicId: result.public_id });

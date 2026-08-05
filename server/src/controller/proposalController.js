@@ -67,7 +67,7 @@ const CreateProposal = async (req, res, next) => {
 
         let fileUrl, filePublicId;
         if (req.file) {
-            const uploadResult = await UploadBufferToCloudinary(req.file.buffer, "blueprint/proposals", "raw");
+            const uploadResult = await UploadBufferToCloudinary(req.file.buffer, "blueprint/proposals", "raw", req.file.originalname);
             fileUrl = uploadResult.secureUrl;
             filePublicId = uploadResult.publicId;
         } else {

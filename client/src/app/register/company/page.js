@@ -160,9 +160,10 @@ const CompanyRegisterPage = () => {
           name: '',
           legalName: '',
           description: '',
-          industryVertical: '',
-          businessActivity: '',
-          interestedIndustries: '',
+          industryVertical: [],
+          businessActivity: [],
+          interestedIndustries: [],
+          logo: null,
         });
         // Optional: Redirect after 2 seconds
         setTimeout(() => {
