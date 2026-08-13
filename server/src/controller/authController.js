@@ -251,6 +251,19 @@ const LogoutUser = (req, res, next) => {
 };
 
 
+const GetCurrentUser = async (req, res, next) => {
+    try {
+        return successResponse(res, {
+            statusCode: 200,
+            message: "Current user fetched",
+            payload: {user: req.user.toJSON()}
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+
 const protectedRoute = async (req, res, next) => {
     try {
         
@@ -261,4 +274,4 @@ const protectedRoute = async (req, res, next) => {
 
 
 
-export { ActivateUser, RequestUserRegistration, LoginUser, LogoutUser };
+export { ActivateUser, RequestUserRegistration, LoginUser, LogoutUser, GetCurrentUser };
