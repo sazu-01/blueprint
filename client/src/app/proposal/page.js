@@ -5,6 +5,7 @@ import Image from 'next/image';
 import useProposalStore from '../store/UseProposalStore';
 import useAuthStore from '../store/UseauthStore';
 import useCompanyStore from '../store/UseCompanieStore';
+import { useRequireAuth } from '../hooks/useRequireAuth';
 
 const statusStyles = {
   draft: "bg-slate-100 text-slate-600",
@@ -16,9 +17,12 @@ const statusStyles = {
 };
 
 const ProposalPage = () => {
+  const  checked = useRequireAuth();
   const { user } = useAuthStore();
   const { companies, fetchAllCompanies } = useCompanyStore();
   const { proposals, isLoading, error, fetchCompanyProposals } = useProposalStore();
+
+
 
   useEffect(() => {
     fetchAllCompanies();
@@ -35,6 +39,8 @@ const ProposalPage = () => {
       fetchCompanyProposals(myCompany._id);
     }
   }, [myCompany?._id, fetchCompanyProposals]);
+
+    if (!checked) return null;
 
   if (isLoading) {
     return (

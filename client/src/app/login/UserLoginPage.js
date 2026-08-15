@@ -5,6 +5,8 @@ import Image from 'next/image';
 import { useSearchParams, useRouter } from "next/navigation";
 import useAuthStore from "../store/UseauthStore.js";
 import Link from "next/link";
+import { useGuestOnly } from "../hooks/useGuestOnly.js";
+
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -17,7 +19,7 @@ const fieldClassName =
 
 
 const UserLoginPage = () => {
-
+    const checked = useGuestOnly();
     const router = useRouter();
     const searchParams = useSearchParams();
     const [message, setMessage] = useState(null);
@@ -27,6 +29,8 @@ const UserLoginPage = () => {
         email: "",
         password: "",
     });
+
+   if (!checked) return null;
 
     const handleChange = (event) => {
         const { name, value } = event.target;

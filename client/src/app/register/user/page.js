@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
+import { useGuestOnly } from "@/app/hooks/useGuestOnly";
 
 // API Base URL 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -13,6 +14,7 @@ const fieldClassName =
   "h-12 w-full rounded-md border border-slate-300 bg-white px-4 text-[15px] text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-primary focus:ring-primary/15";
 
 const UserRegisterPage = () => {
+  const checked = useGuestOnly();
   const router = useRouter();
   const [formData, setFormData] = useState({
     email: "",
@@ -20,6 +22,8 @@ const UserRegisterPage = () => {
   });
   const [message, setMessage] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  if(!checked) return null;
 
   const handleChange = (event) => {
     const { name, value } = event.target;

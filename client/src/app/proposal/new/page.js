@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import useAuthStore from '@/app/store/UseauthStore';
 import useCompanyStore from '@/app/store/UseCompanieStore';
 import useProposalStore from '@/app/store/UseProposalStore';
+import { useRequireAuth } from '@/app/hooks/useRequireAuth';
 
 const PROPOSAL_TYPES = [
   "Acquisition",
@@ -19,6 +20,7 @@ const PROPOSAL_TYPES = [
 ];
 
 const NewProposalPage = () => {
+  const checked = useRequireAuth();
   const router = useRouter();
   const { user } = useAuthStore();
   const { companies, fetchAllCompanies } = useCompanyStore();
@@ -32,6 +34,8 @@ const NewProposalPage = () => {
   useEffect(() => {
     fetchAllCompanies();
   }, [fetchAllCompanies]);
+
+  if(!checked) return null;
 
   const myCompany = companies.find(
     (c) => c.createdBy?.toString() === user?._id?.toString()
