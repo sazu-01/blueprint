@@ -93,7 +93,7 @@ const PostPage = ({ onSuccess, onCancel }) => {
   };
 
   return (
-    <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-5">
+    <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-3 sm:p-17">
       <form onSubmit={handleSubmit}>
 
         {/* Header: company identity */}
@@ -119,7 +119,7 @@ const PostPage = ({ onSuccess, onCancel }) => {
           onChange={(e) => setContent(e.target.value.slice(0, MAX_LENGTH))}
           rows={4}
           placeholder="Share an update, opportunity, or what you're looking for..."
-          className="w-full text-sm text-slate-800 border border-slate-200 rounded-xl p-3 outline-none focus:border-blue-300 resize-none"
+          className="w-full text-sm text-slate-800 border border-slate-500 rounded-xl p-3 outline-none focus:border-blue-500 resize-none"
         />
         <div className="flex justify-end mt-1">
           <span className="text-xs text-slate-400">
@@ -136,7 +136,7 @@ const PostPage = ({ onSuccess, onCancel }) => {
             id="postType"
             value={postType}
             onChange={(e) => setPostType(e.target.value)}
-            className="w-full text-sm text-slate-800 border border-slate-200 rounded-lg px-3 py-2 outline-none focus:border-blue-300 cursor-pointer"
+            className="w-full text-sm text-slate-800 border border-slate-500 rounded-lg px-3 py-2 outline-none focus:border-blue-500 cursor-pointer"
           >
             <option value="" disabled>Select a type</option>
             {POST_TYPES.map((type) => (
@@ -175,7 +175,7 @@ const PostPage = ({ onSuccess, onCancel }) => {
             onChange={(e) => setIndustryInput(e.target.value)}
             onKeyDown={handleAddIndustry}
             placeholder="e.g. Fintech — press Enter to add"
-            className="w-full text-sm text-slate-800 border border-slate-200 rounded-lg px-3 py-2 outline-none focus:border-blue-300"
+            className="w-full text-sm text-slate-800 border border-slate-500 rounded-lg px-3 py-2 outline-none focus:border-blue-500"
           />
         </div>
 
