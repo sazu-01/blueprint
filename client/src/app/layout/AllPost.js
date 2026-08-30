@@ -7,7 +7,7 @@ import usePostStore from '../store/UsePostStore';
 import useAuthStore from '../store/UseauthStore';
 import useCompanyStore from '../store/UseCompanieStore';
 import Link from 'next/link';
-import { FiHeart } from "react-icons/fi"; 
+
 
 const postTypeStyles = {
   Partnership: "bg-blue-50 text-blue-700",
@@ -43,7 +43,6 @@ const AllPost = () => {
   const { companies, fetchAllCompanies } = useCompanyStore();
   const { posts, pagination, isLoading, error, fetchAllPosts } = usePostStore();
 
-  const [showCompose, setShowCompose] = useState(false);
   const [page, setPage] = useState(1);
 
   useEffect(() => {
@@ -112,7 +111,7 @@ const AllPost = () => {
             return (
               <div
                 key={post._id}
-                className="bg-white border border-slate-200 rounded-2xl shadow-sm p-5"
+                className="rounded-2xl p-5 bg-white border border-[#dddcdc] rounded-lg overflow-hidden"
               >
                 {/* Header */}
                 <div className="flex items-start gap-3">
@@ -171,19 +170,12 @@ const AllPost = () => {
 
 
                 {/* */}
-<div className="flex items-center gap-2 mt-4">
-  <button
-    type="button"
-    onClick={() => router.push(`/interest/${post.company?._id}`)}
-    className="flex-1 flex items-center justify-center gap-2 text-sm font-medium text-slate-700 bg-white border border-slate-200 hover:border-blue-300 hover:text-blue-600 px-4 py-2 rounded-full transition-colors"
-  >
-    <Image src="/interest.png" alt="" width={40} height={40} />
-    <span>Interested</span>
-  </button>
+<div className="flex items-center justify-end gap-2 mt-4">
+
 
   <Link
     href={`/proposal/create?companyId=${post.company?._id}`}
-    className="flex-1 flex items-center justify-center gap-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-full shadow-sm transition-colors"
+    className="flex items-center gap-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 px-8 py-2 rounded-sm shadow-sm transition-colors"
   >
     <FaLocationArrow size={14} />
     <span>Propose</span>
