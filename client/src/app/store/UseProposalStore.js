@@ -82,17 +82,24 @@ const useProposalStore = create((set) => ({
             });
             const data = await response.json();
             if (!response.ok) throw new Error(data.message || "Failed to update proposal status");
+
+            const updated = data.payload.proposal;
             set((state) => ({
                 proposals: state.proposals.map((p) =>
-                    p._id === id ? data.payload.proposal : p
+                    p._id === id ? {...p, ...updated, fromCompany: p.fromCompany, toComppany: p.toCompany} : p
                 ),
                 currentProposal:
                     state.currentProposal?._id === id
-                        ? data.payload.proposal
+                        ? {
+                        ...state.currentProposal,
+                        ...updated,
+                        fromCompany: state.currentProposal.fromCompany,
+                        toCompany: state.currentProposal.toCompany,
+                    }
                         : state.currentProposal,
                 isLoading: false,
             }));
-            return data.payload.proposal;
+            return updated;
         } catch (error) {
             set({ error: error.message, isLoading: false });
             throw error;

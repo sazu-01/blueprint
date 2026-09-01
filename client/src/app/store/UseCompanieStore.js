@@ -47,13 +47,14 @@ updateCompany: async (id, formData) => {
         if (!response.ok) {
             throw new Error(data.message || "Failed to update company");
         }
+        const updatedCompany = data.payload.company;
         set((state) => ({
             companies: state.companies.map((c) =>
-                c._id === id ? data.payload.company : c
+                c._id === id ? {...c, ...updatedCompany, createdBy: c.createdBy} : c
             ),
             isLoading: false,
         }));
-        return data.payload.company;
+        return updatedCompany;
     } catch (error) {
         set({ error: error.message, isLoading: false });
         throw error;

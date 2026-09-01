@@ -82,7 +82,7 @@ const ProposalDetailPage = () => {
     (c) => c.createdBy?.toString() === user?._id?.toString()
   );
 
-  if (isLoading) return (
+  if (isLoading && !proposal) return (
     <div className="flex h-[70vh] items-center justify-center">
       <p className="text-slate-500">Loading...</p>
     </div>
