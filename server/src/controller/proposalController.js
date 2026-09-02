@@ -3,6 +3,7 @@ import Proposal from "../model/proposalModel.js";
 import Company from "../model/comanieModel.js";
 import { successResponse, errorResponse } from "../helpers/response.js";
 import { UploadBufferToCloudinary } from "../helpers/Cloudinary.js";
+import ProposalText from "../model/proposalTextModel.js";
 
 
 // Quick helper: confirm the logged-in user actually belongs to a given company
@@ -32,13 +33,21 @@ const VALID_TRANSITIONS = {
 
 const CreateProposal = async (req, res, next) => {
     try {
-        const { proposalType, fromCompany, toCompany } = req.body;
+        const { proposalType, fromCompany, toCompany, text } = req.body;
         const userId = req.user._id;
 
         if (!proposalType || !fromCompany || !toCompany) {
             return errorResponse(res, {
                 statusCode: 400,
                 message: "proposalType, fromCompany, and toCompany are required",
+            })
+        }
+
+        // Must have at least text or a file
+        if((!text || !text.trim()) && !req.file) {
+            return errorResponse(res, {
+                statusCode: 400,
+                message: "A proposal must include a message or an attached document"
             })
         }
 
@@ -64,18 +73,14 @@ const CreateProposal = async (req, res, next) => {
                 message: "Receiving company not found"
             })
         }
-
+        
+        //upload file if attached
         let fileUrl, filePublicId;
         if (req.file) {
             const uploadResult = await UploadBufferToCloudinary(req.file.buffer, "blueprint/proposals", "raw", req.file.originalname);
             fileUrl = uploadResult.secureUrl;
             filePublicId = uploadResult.publicId;
-        } else {
-            return errorResponse(res, {
-                statusCode: 404,
-                message: "a proposal document file is required"
-            });
-        }
+        } 
 
         let proposal;
         for (let attempt = 0; attempt < 2; attempt++) {
@@ -86,8 +91,6 @@ const CreateProposal = async (req, res, next) => {
                     fromCompany,
                     toCompany,
                     createdBy: userId,
-                    file: fileUrl,
-                    filePublicId,
                     status: "sent",
                 });
                 break;
@@ -97,10 +100,20 @@ const CreateProposal = async (req, res, next) => {
             }
         }
 
+
+        // create first proposal content
+        const firstMessage = await ProposalText.create({
+            proposal: proposal._id,
+            senderCompany: fromCompany,
+            senderUser: userId,
+            text: text?.trim() || "",
+            ...(fileUrl && { file : fileUrl, filePublicId}),
+        });
+
         return successResponse(res, {
             statusCode: 201,
             message: "Proposal Sent Successfully",
-            payload: { proposal }
+            payload: { proposal, firstMessage }
         })
 
     } catch (error) {
@@ -121,10 +134,16 @@ const GetProposalById = async (req, res, next) => {
             return errorResponse(res, { statusCode: 404, message: "Proposal not found" });
         }
 
+         // Always include the thread so the detail page has everything in one call
+        const texts = await ProposalText.find({ proposal: id })
+            .sort({ createdAt: 1 })
+            .populate("senderCompany", "name legalName logo")
+            .populate("senderUser", "name email");
+
         return successResponse(res, {
             statusCode: 200,
             message: "Proposal fetched successfully",
-            payload: { proposal },
+            payload: { proposal, texts },
         });
     } catch (error) {
         next(error);

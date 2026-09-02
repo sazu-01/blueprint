@@ -2,6 +2,7 @@ import Proposal from "../model/proposalModel.js";
 import Company from "../model/comanieModel.js";
 import ProposalText from "../model/proposalTextModel.js";
 import { successResponse, errorResponse } from "../helpers/response.js";
+import { UploadBufferToCloudinary } from "../helpers/Cloudinary.js";
 
 const isCompanyMember = async (companyId, userId) => {
     return await Company.exists({ _id: companyId, createdBy: userId });
@@ -20,8 +21,8 @@ const SendText = async (req, res, next) => {
             return errorResponse(res, { statusCode: 400, message: "senderCompany is required" });
         }
 
-        if (!text || !text.trim()) {
-            return errorResponse(res, { statusCode: 400, message: "Message text is required" });
+        if ((!text || !text.trim())  && !req.file) {
+            return errorResponse(res, { statusCode: 400, message: "A reply must include a message or an attached file" });
         }
 
         const proposal = await Proposal.findById(proposalId);
@@ -57,17 +58,37 @@ const SendText = async (req, res, next) => {
             });
         }
 
+
+        // Upload file if attached
+        let fileUrl, filePublicId;
+        if (req.file) {
+            const uploadResult = await UploadBufferToCloudinary(
+                req.file.buffer,
+                "blueprint/proposals",
+                "raw",
+                req.file.originalname
+            );
+            fileUrl = uploadResult.secureUrl;
+            filePublicId = uploadResult.publicId;
+        }
+
         const newText = await ProposalText.create({
             proposal: proposalId,
             senderCompany,
             senderUser: userId,
             text: text.trim(),
+            ...(fileUrl && { file: fileUrl, filePublicId }),
         });
+
+       // Refetch with populated fields so frontend gets full sender info
+        const populated = await ProposalText.findById(newText._id)
+            .populate("senderCompany", "name legalName logo")
+            .populate("senderUser", "name email");
 
         return successResponse(res, {
             statusCode: 201,
             message: "Message sent",
-            payload: { text: newText },
+            payload: { text: populated },
         });
     } catch (error) {
         next(error);

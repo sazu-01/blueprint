@@ -1,6 +1,6 @@
 
 
-import mongoose, { Schema, model } from "mongoose";
+import { Schema, model } from "mongoose";
 
 const proposalSchema = new Schema({
 
@@ -38,10 +38,6 @@ const proposalSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: "User",
         required: true,
-    },
-
-    file: {
-        type: String,
     },
 
     rejectionReason: {

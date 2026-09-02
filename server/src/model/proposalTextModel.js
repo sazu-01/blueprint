@@ -20,8 +20,17 @@ const ProposalTextSchema = new Schema({
     },
     text: {
         type: String,
-        required: true,
+        default: "",
     },
+
+    file: {
+        type: String,
+    },
+
+    filePublicId: {
+        type: String,
+    },
+    
 }, { timestamps: true });
 
 ProposalTextSchema.index({ proposal: 1, createdAt: 1 });

@@ -23,4 +23,5 @@ proposalRoute.patch("/proposal/respond/:id", IsLoggedIn, RespondToProposal);
 
 proposalRoute.get("/proposal/:id", IsLoggedIn, GetProposalById);
 
+
 export default proposalRoute;
