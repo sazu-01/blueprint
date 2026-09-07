@@ -174,7 +174,7 @@ const AllPost = () => {
 
 
   <Link
-    href={`/proposal/create?companyId=${post.company?._id}`}
+     href={`/proposal/new?legalName=${encodeURIComponent(post.company?.legalName || "")}`}
     className="flex items-center gap-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 px-8 py-2 rounded-sm shadow-sm transition-colors"
   >
     <FaLocationArrow size={14} />

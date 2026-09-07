@@ -1,7 +1,7 @@
 
 "use client";
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { FiPaperclip, FiX } from "react-icons/fi";
 import useAuthStore from '@/app/store/UseauthStore';
 import useCompanyStore from '@/app/store/UseCompanieStore';
@@ -12,19 +12,32 @@ const PROPOSAL_TYPES = [
   "Joint Venture", "Networking", "Partnership", "Project", "Vendor search",
 ];
 
+const normalize = (str) => (str || "").trim().toLowerCase();
+
 const NewProposalPage = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user } = useAuthStore();
   const { companies, fetchAllCompanies } = useCompanyStore();
   const { createProposal, isLoading, error } = useProposalStore();
 
-  const [toCompany, setToCompany] = useState("");
+  const [legalName, setLegalName] = useState("");
+  const [isLegalNameLocked, setIsLegalNameLocked] = useState(false);
   const [proposalType, setProposalType] = useState("");
   const [bodyText, setBodyText] = useState("");
   const [file, setFile] = useState(null);
   const [formError, setFormError] = useState("");
 
   useEffect(() => { fetchAllCompanies(); }, [fetchAllCompanies]);
+
+  // Auto-fill + lock when arriving from AllPost "Propose" button
+  useEffect(() => {
+    const paramLegalName = searchParams.get("legalName");
+    if (paramLegalName) {
+      setLegalName(paramLegalName);
+      setIsLegalNameLocked(true);
+    }
+  }, [searchParams]);
 
   const myCompany = companies.find(
     (c) => c.createdBy?.toString() === user?._id?.toString()
@@ -48,8 +61,8 @@ const NewProposalPage = () => {
       setFormError("You need a registered company before sending proposals.");
       return;
     }
-    if (!toCompany || !proposalType) {
-      setFormError("Please select a receiving company and proposal type.");
+    if (!legalName.trim() || !proposalType) {
+      setFormError("Please enter the receiving company's legal name and select a proposal type.");
       return;
     }
     if (!bodyText.trim() && !file) {
@@ -57,9 +70,19 @@ const NewProposalPage = () => {
       return;
     }
 
+    // Match legalName against companies list (case-insensitive)
+    const matchedCompany = otherCompanies.find(
+      (c) => normalize(c.legalName) === normalize(legalName)
+    );
+
+    if (!matchedCompany) {
+      window.alert("there is no company with this legalName");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("fromCompany", myCompany._id);
-    formData.append("toCompany", toCompany);
+    formData.append("toCompany", matchedCompany._id);
     formData.append("proposalType", proposalType);
     if (bodyText.trim()) formData.append("text", bodyText.trim());
     if (file) formData.append("file", file);
@@ -100,19 +123,21 @@ const NewProposalPage = () => {
 
           {/* To */}
           <div className="flex items-center gap-3 px-5 py-3">
-            <label htmlFor="toCompany" className="text-sm text-slate-400 w-16 shrink-0">To</label>
-            <select
-              id="toCompany"
-              value={toCompany}
-              onChange={(e) => setToCompany(e.target.value)}
-              className="flex-1 text-sm text-slate-800 bg-transparent outline-none cursor-pointer"
+            <label htmlFor="toLegalName" className="text-sm text-slate-400 w-16 shrink-0">To</label>
+            <input
+              id="toLegalName"
+              type="text"
+              value={legalName}
+              onChange={(e) => !isLegalNameLocked && setLegalName(e.target.value)}
+              disabled={isLegalNameLocked}
+              placeholder="Enter recipient company's legal name"
+              className={`flex-1 text-sm outline-none ${
+                isLegalNameLocked
+                  ? "bg-slate-50 text-slate-500 cursor-not-allowed"
+                  : "text-slate-800 bg-transparent"
+              }`}
               required
-            >
-              <option value="" disabled>Select a company</option>
-              {otherCompanies.map((c) => (
-                <option key={c._id} value={c._id}>{c.name}</option>
-              ))}
-            </select>
+            />
           </div>
 
           {/* Type */}
@@ -137,8 +162,8 @@ const NewProposalPage = () => {
             <textarea
               value={bodyText}
               onChange={(e) => setBodyText(e.target.value)}
-              rows={5}
-              placeholder="Write your proposal message here..."
+              rows={8}
+              placeholder="Write your proposal here..."
               className="w-full text-sm text-slate-800 border border-slate-200 rounded-xl p-3 outline-none focus:border-blue-300 resize-none"
             />
           </div>
@@ -184,8 +209,11 @@ const NewProposalPage = () => {
           <div className="flex items-center justify-between px-5 py-3 bg-slate-50">
             <button
               type="button"
-              onClick={() => router.back()}
-              className="text-sm text-slate-500 hover:text-slate-700"
+              className="text-sm text-red-500 hover:text-red-700 cursor-pointer font-medium"
+              onClick={()=> {
+                const confirmed =window.confirm("Are you sure you want to discard?")
+                if(confirmed) router.back();
+              }}
             >
               Discard
             </button>
@@ -204,8 +232,3 @@ const NewProposalPage = () => {
 };
 
 export default NewProposalPage;
-
-
-
-
-
