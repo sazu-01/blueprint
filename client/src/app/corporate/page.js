@@ -60,7 +60,7 @@ const CorporatePage = () => {
       {otherCompanies?.map((company) => (
         <div
           key={company._id}
-          className="bg-white border border-slate-200 rounded-xl p-4 hover:shadow-md transition-all"
+          className="bg-white border border-[#dddcdc] rounded-xl p-4  transition-all"
         >
           <div className="flex gap-4">
             {/* Logo */}
@@ -119,12 +119,12 @@ const CorporatePage = () => {
               </div>
 
               {/* Industry */}
-              <div className="flex mt-4">
-                <p className="text-xs font-semibold text-slate-500 mb-2 uppercase">
+              <div className="flex mt-4 ">
+                <p className="text-xs font-semibold text-slate-500 mt-1 mb-0 uppercase">
                   Industry
                 </p>
 
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap ml-2 gap-2">
                   {parseTagArray(company.industryVertical).map(
                     (industry, idx) => (
                       <span
@@ -139,7 +139,7 @@ const CorporatePage = () => {
               </div>
 
               {/* Looking For */}
-              <div className="mt-3 flex items-center">
+              {/* <div className="mt-3 flex items-center">
                 <div className="text-xs font-semibold text-slate-500 mb-2 uppercase m-0">
                   Looking For
                 </div>
@@ -156,13 +156,13 @@ const CorporatePage = () => {
                     )
                   )}
                 </div>
-              </div>
+              </div> */}
             </div>
 
             {/* Action */}
             <div className="hidden md:flex items-start">
-              <Link href={`/company/${company.legalName}`} className="px-4 py-2 rounded-lg border border-blue-600 text-blue-600 hover:bg-blue-50 font-medium">
-                View Profile
+              <Link href={`/company/${company.legalName}`} className="px-4 py-2 rounded-sm border border-blue-[#EBF3FC] bg-white text-[#104D8A] font-medium hover:bg-[#EFF6FF]">
+                View profile
               </Link>
 
     

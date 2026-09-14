@@ -12,7 +12,7 @@ import userRoute from "./route/userRoute.js";
 const app = express();
 
 const corsOption = {
-    origin : ["http://localhost:3000", "https://blueprintt.vercel.app"],
+    origin : ["http://localhost:3000", "https://www.blueprintt.app"],
     credentials : true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']

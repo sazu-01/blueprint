@@ -83,7 +83,7 @@ const TagInput = ({ label, values, onChange }) => {
         onChange={(e) => setInput(e.target.value)}
         onKeyDown={addTag}
         placeholder="Type and press Enter or comma to add"
-        className="w-full text-sm text-slate-800 border border-slate-200 rounded-lg px-3 py-2 outline-none focus:border-blue-300"
+        className="w-full text-sm text-slate-800 border border-[#dddcdc] rounded-lg px-3 py-2 outline-none focus:border-blue-300"
       />
     </div>
   );
@@ -201,7 +201,7 @@ const CompanyUpdatePage = () => {
 
   return (
     <div className="max-w-2xl mx-auto pb-24">
-      <h1 className="text-lg font-semibold text-slate-900 mb-6">Update Company</h1>
+      <h1 className="text-lg font-semibold text-slate-900 mb-6 mt-4">Update Company</h1>
 
       <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 space-y-6">
 
@@ -230,7 +230,7 @@ const CompanyUpdatePage = () => {
               type="text"
               value={form.name}
               onChange={(e) => handleField("name", e.target.value)}
-              className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 outline-none focus:border-blue-300"
+              className="w-full text-sm border border-[#dddcdc] rounded-lg px-3 py-2 outline-none focus:border-blue-300"
             />
           </div>
 
@@ -240,7 +240,7 @@ const CompanyUpdatePage = () => {
               type="text"
               value={form.legalName}
               onChange={(e) => handleField("legalName", e.target.value)}
-              className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 outline-none focus:border-blue-300"
+              className="w-full text-sm border border-[#dddcdc] rounded-lg px-3 py-2 outline-none focus:border-blue-300"
             />
           </div>
 
@@ -250,7 +250,7 @@ const CompanyUpdatePage = () => {
               value={form.description}
               onChange={(e) => handleField("description", e.target.value)}
               rows={4}
-              className="w-full text-sm border border-slate-200 rounded-lg p-3 outline-none focus:border-blue-300 resize-none"
+              className="w-full text-sm border border border-[#dddcdc] rounded-lg p-3 outline-none focus:border-blue-300 resize-none"
             />
           </div>
 
@@ -282,7 +282,7 @@ const CompanyUpdatePage = () => {
                 type="text"
                 value={form.country}
                 onChange={(e) => handleField("country", e.target.value)}
-                className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 outline-none focus:border-blue-300"
+                className="w-full text-sm border border-[#dddcdc] rounded-lg px-3 py-2 outline-none focus:border-blue-300"
               />
             </div>
             <div>
@@ -291,7 +291,7 @@ const CompanyUpdatePage = () => {
                 type="text"
                 value={form.address}
                 onChange={(e) => handleField("address", e.target.value)}
-                className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 outline-none focus:border-blue-300"
+                className="w-full text-sm border border-[#dddcdc] rounded-lg px-3 py-2 outline-none focus:border-blue-300"
               />
             </div>
             <div>
@@ -299,7 +299,7 @@ const CompanyUpdatePage = () => {
               <select
                 value={form.companyType}
                 onChange={(e) => handleField("companyType", e.target.value)}
-                className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 outline-none focus:border-blue-300 cursor-pointer"
+                className="w-full text-sm border border-[#dddcdc] rounded-lg px-3 py-2 outline-none focus:border-blue-300 cursor-pointer"
               >
                 <option value="">Select type</option>
                 {COMPANY_TYPES.map((t) => (
@@ -313,7 +313,7 @@ const CompanyUpdatePage = () => {
                 type="text"
                 value={form.companySize}
                 onChange={(e) => handleField("companySize", e.target.value)}
-                className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 outline-none focus:border-blue-300"
+                className="w-full text-sm border border-[#dddcdc] rounded-lg px-3 py-2 outline-none focus:border-blue-300"
               />
             </div>
             <div>
@@ -322,7 +322,7 @@ const CompanyUpdatePage = () => {
                 type="text"
                 value={form.foundedYear}
                 onChange={(e) => handleField("foundedYear", e.target.value)}
-                className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 outline-none focus:border-blue-300"
+                className="w-full text-sm border border-[#dddcdc] rounded-lg px-3 py-2 outline-none focus:border-blue-300"
               />
             </div>
             <div>
@@ -331,7 +331,7 @@ const CompanyUpdatePage = () => {
                 type="text"
                 value={form.fundingStaged}
                 onChange={(e) => handleField("fundingStaged", e.target.value)}
-                className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 outline-none focus:border-blue-300"
+                className="w-full text-sm border border-[#dddcdc] rounded-lg px-3 py-2 outline-none focus:border-blue-300"
               />
             </div>
             <div>
@@ -340,7 +340,7 @@ const CompanyUpdatePage = () => {
                 type="text"
                 value={form.webLink}
                 onChange={(e) => handleField("webLink", e.target.value)}
-                className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 outline-none focus:border-blue-300"
+                className="w-full text-sm border border-[#dddcdc] rounded-lg px-3 py-2 outline-none focus:border-blue-300"
               />
             </div>
             <div>
@@ -349,7 +349,7 @@ const CompanyUpdatePage = () => {
                 type="text"
                 value={form.officialDomain}
                 onChange={(e) => handleField("officialDomain", e.target.value)}
-                className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 outline-none focus:border-blue-300"
+                className="w-full text-sm border border-[#dddcdc] rounded-lg px-3 py-2 outline-none focus:border-blue-300"
               />
             </div>
           </div>
@@ -362,19 +362,19 @@ const CompanyUpdatePage = () => {
 
       {/* Sticky update/discard bar — only shows when something changed */}
       {isDirty && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-lg px-4 py-3 z-50">
+        <div className="fixed bottom-0 left-0 right-0 bg-white border border-t border-[#dddcdc] shadow-lg px-4 py-3 z-50">
           <div className="max-w-2xl mx-auto flex items-center justify-end gap-3">
             <button
               onClick={handleDiscard}
               disabled={submitting}
-              className="text-sm text-slate-500 hover:text-slate-700 px-4 py-2"
+              className="text-sm font-semibold cursor-pointer text-white px-4 py-2 bg-red-500 rounded-full"
             >
               Discard
             </button>
             <button
               onClick={handleUpdate}
               disabled={submitting}
-              className="text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 px-5 py-2 rounded-full disabled:opacity-50"
+              className="text-sm font-semibold text-white cursor-pointer bg-blue-600 hover:bg-blue-700 px-5 py-2 rounded-full disabled:opacity-50"
             >
               {submitting ? "Updating..." : "Update"}
             </button>

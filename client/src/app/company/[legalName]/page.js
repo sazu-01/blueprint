@@ -170,7 +170,7 @@ const CompanyProfilePage = () => {
 
                 {/* Left sidebar tabs */}
                 <div className="w-44 shrink-0">
-                    <div className="sticky top-20 flex flex-col gap-1">
+                    <div className="sticky bg-[#ffffff] top-20 flex flex-col gap-1 pb-3 pt-3 rounded-xl border border-slate-200 ">
                         {TABS.map((tab) => (
                             <button
                                 key={tab.id}
@@ -206,7 +206,7 @@ const CompanyProfilePage = () => {
                 </div>
 
                 {/* Right content sections */}
-                <div className="flex-1 min-w-0 space-y-10 pb-10">
+                <div className="flex-1 bg-[#ffffff] min-w-0 space-y-10 p-5 rounded-xl border border-slate-200" >
                     <section id="overview"
                         data-tab-id="overview"
                         ref={(el) => (sectionRefs.current.overview = el)}
@@ -307,14 +307,14 @@ const CompanyProfilePage = () => {
                                 </p>
 
                                 {company.webLink ? (
-                                    <a
+                                    <Link
                                         href={company.webLink}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="text-blue-600 font-medium hover:underline break-all"
                                     >
                                         {company.webLink}
-                                    </a>
+                                    </Link>
                                 ) : (
                                     <p className="text-slate-700 font-medium">—</p>
                                 )}

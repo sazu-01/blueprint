@@ -60,12 +60,12 @@ const AllPost = () => {
 
   return (
     <div className="grid grid-cols-12 gap-4 max-w-7xl mx-auto pb-16 mt-5 ">
-      <div className='col-span-12 lg:col-span-7 ml-8'>
+      <div className='col-span-12 lg:col-span-7 lg:ml-8 sm:m-6'>
 
 
         <Link
           href={`/post`}
-          className="w-full flex items-center gap-3 bg-white border border-slate-200 rounded-2xl shadow-sm px-5 py-4 mb-6 hover:border-blue-300 transition-colors text-left"
+          className="w-full flex items-center gap-3 bg-white border border-[#dddcdc] rounded-2xl px-5 py-4 mb-6 hover:border-blue-300 transition-colors text-left"
         >
           <Image
             src={myCompany?.logo || "/non_company_profile.png"}
@@ -75,7 +75,7 @@ const AllPost = () => {
             className="rounded-lg object-cover w-9 h-9 border border-slate-100 shrink-0"
           />
           <span className="text-sm text-slate-400">
-            Share an update, opportunity, or what you're looking for...
+          What kind of partner or deal you're looking for
           </span>
         </Link>
 
