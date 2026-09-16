@@ -6,21 +6,9 @@ import { FaLocationArrow } from "react-icons/fa";
 import usePostStore from '../store/UsePostStore';
 import useAuthStore from '../store/UseauthStore';
 import useCompanyStore from '../store/UseCompanieStore';
+import { postTypeStyles } from '../lib/proposalType';
 import Link from 'next/link';
 
-
-const postTypeStyles = {
-  Partnership: "bg-blue-50 text-blue-700",
-  Investment: "bg-green-50 text-green-700",
-  Collaboration: "bg-purple-50 text-purple-700",
-  Project: "bg-amber-50 text-amber-700",
-  "Vendor Search": "bg-orange-50 text-orange-700",
-  Procurement: "bg-cyan-50 text-cyan-700",
-  Networking: "bg-pink-50 text-pink-700",
-  Distribution: "bg-indigo-50 text-indigo-700",
-  Acquisition: "bg-rose-50 text-rose-700",
-  "Joint Venture": "bg-teal-50 text-teal-700",
-};
 
 const timeAgo = (date) => {
   const seconds = Math.floor((new Date() - new Date(date)) / 1000);

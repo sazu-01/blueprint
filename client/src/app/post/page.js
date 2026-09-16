@@ -5,19 +5,8 @@ import { FiX } from "react-icons/fi";
 import usePostStore from '../store/UsePostStore';
 import useAuthStore from '../store/UseauthStore';
 import useCompanyStore from '../store/UseCompanieStore';
+import { POST_TYPES } from '../lib/proposalType';
 
-const POST_TYPES = [
-  "Partnership",
-  "Investment",
-  "Collaboration",
-  "Project",
-  "Vendor Search",
-  "Procurement",
-  "Networking",
-  "Distribution",
-  "Acquisition",
-  "Joint Venture",
-];
 
 const MAX_LENGTH = 3000;
 

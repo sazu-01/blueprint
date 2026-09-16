@@ -12,7 +12,7 @@ const proposalSchema = new Schema({
 
     proposalType : {
         type : String, 
-        enum: ["Acquisition", "Collaboration", "Distribution", "Investment", "Joint Venture", "Networking", "Partnership", "Project",  "Vendor search"],
+        enum: ["Acquisition", "Collaboration", "Distribution", "Investment",   "Integration", "Joint Venture", "Networking", "Partnership",  "Procurement", "Project", "Purchase", "Sale", "Vendor search"],
         required: true,
     },
 

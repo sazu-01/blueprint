@@ -6,11 +6,8 @@ import { FiPaperclip, FiX } from "react-icons/fi";
 import useAuthStore from '@/app/store/UseauthStore';
 import useCompanyStore from '@/app/store/UseCompanieStore';
 import useProposalStore from '@/app/store/UseProposalStore';
+import { PROPOSAL_TYPES } from '@/app/lib/proposalType';
 
-const PROPOSAL_TYPES = [
-  "Acquisition", "Collaboration", "Distribution", "Investment",
-  "Joint Venture", "Networking", "Partnership", "Project", "Vendor search",
-];
 
 const normalize = (str) => (str || "").trim().toLowerCase();
 

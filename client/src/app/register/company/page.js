@@ -2,7 +2,7 @@
 
 "use client";
 import { useState } from 'react';
-
+import { businessActivities, industries } from '@/app/lib/proposalType';
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 if (!apiBaseUrl) {
@@ -25,32 +25,6 @@ const CompanyRegisterPage = () => {
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
 
-  const industries = [
-    'Technology',
-    'SaaS',
-    'Finance',
-    'Healthcare',
-    'Manufacturing',
-    'Retail',
-    'Logistics',
-    'Real Estate',
-    'Education',
-    'Media & Entertainment',
-    'Other'
-  ];
-
-  const businessActivities = [
-    'Partnership',
-    'Investment',
-    'Collaboration',
-    'Project',
-    'Vendor Search',
-    'Procurement',
-    'Networking',
-    'Distribution',
-    'Acquisition',
-    'Joint Venture'
-  ]
 
   const TagSelector = ({ options, selected, onChange, maxSelect }) => {
     const toggle = (item) => {
