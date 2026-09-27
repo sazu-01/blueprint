@@ -2,7 +2,7 @@
 
 "use client";
 import { useState } from 'react';
-import { businessActivities, industries } from '@/app/lib/proposalType';
+import { industries } from '@/app/lib/proposalType';
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 if (!apiBaseUrl) {
@@ -88,8 +88,6 @@ const CompanyRegisterPage = () => {
     if (!formData.legalName.trim()) newErrors.legalName = 'Legal name is required';
     if (!formData.description.trim()) newErrors.description = 'Description is required';
     if (!formData.industryVertical.length === 0) newErrors.industryVertical = 'Industry vertical is required';
-    if (!formData.businessActivity.length === 0) newErrors.businessActivity = 'Business activity is required';
-    if (!formData.interestedIndustries.length === 0) newErrors.interestedIndustries = 'Interested industries is required';
     if (!formData.logo) newErrors.logo = "Company logo is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -112,9 +110,6 @@ const CompanyRegisterPage = () => {
     companyData.append("legalName", formData.legalName);
     companyData.append("description", formData.description);
     formData.industryVertical.forEach(v => companyData.append("industryVertical", v));
-    formData.businessActivity.forEach(v => companyData.append("businessActivity", v));
-    formData.interestedIndustries.forEach(v => companyData.append("interestedIndustries", v));
-
 
     setLoading(true);
     setSuccessMessage('');
@@ -135,8 +130,6 @@ const CompanyRegisterPage = () => {
           legalName: '',
           description: '',
           industryVertical: [],
-          businessActivity: [],
-          interestedIndustries: [],
           logo: null,
         });
         // Optional: Redirect after 2 seconds
@@ -289,39 +282,6 @@ const CompanyRegisterPage = () => {
           {errors.industryVertical && <p className="text-red-600 text-sm mt-1">{errors.industryVertical}</p>}
         </div>
 
-        {/* Business Activity */}
-        <div>
-          <label className="block text-sm font-semibold text-slate-900 mb-2">
-            What are you looking for? <span className="text-red-500">*</span>
-            <span className="ml-2 text-xs font-normal text-slate-400">
-              {formData.businessActivity.length}/5 selected
-            </span>
-          </label>
-          <TagSelector
-            options={businessActivities}
-            selected={formData.businessActivity}
-            onChange={(val) => setFormData(prev => ({ ...prev, businessActivity: val }))}
-            maxSelect={5}
-          />
-          {errors.businessActivity && <p className="text-red-600 text-sm mt-1">{errors.businessActivity}</p>}
-        </div>
-
-        {/* Interested Industries */}
-        <div>
-          <label className="block text-sm font-semibold text-slate-900 mb-2">
-            Industries You Want to Connect With <span className="text-red-500">*</span>
-            <span className="ml-2 text-xs font-normal text-slate-400">
-              {formData.interestedIndustries.length}/5 selected
-            </span>
-          </label>
-          <TagSelector
-            options={industries}
-            selected={formData.interestedIndustries}
-            onChange={(val) => setFormData(prev => ({ ...prev, interestedIndustries: val }))}
-            maxSelect={5}
-          />
-          {errors.interestedIndustries && <p className="text-red-600 text-sm mt-1">{errors.interestedIndustries}</p>}
-        </div>
 
         {/* Submit Button */}
         <div className="pt-6">

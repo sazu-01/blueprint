@@ -149,18 +149,6 @@ const CompanyProfilePage = () => {
                                 </button>
                             ))}
                         </div>
-                        <div className='flex flex-wrap gap-1.5 items-center'>
-                            <p className="text-xs font-semibold text-slate-500 uppercase mr-1">Looking for</p>
-                            {parseTagArray(company.businessActivity).map((activity, index) => (
-                                <button
-                                    key={index}
-                                    type="button"
-                                    className='px-2.5 py-1 text-xs font-medium rounded-full bg-blue-50 text-blue-700 border border-blue-100 hover:bg-blue-100 transition-colors'
-                                >
-                                    {activity}
-                                </button>
-                            ))}
-                        </div>
                     </div>
                 </div>
             </div>

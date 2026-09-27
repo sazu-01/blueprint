@@ -22,11 +22,9 @@ const companieSchema = new Schema({
     },
     businessActivity: {
         type: Array,
-        required: true,
     },
     interestedIndustries: {
         type: Array,
-        required: true,
     },
     
     // OPTIONAL FIELDS

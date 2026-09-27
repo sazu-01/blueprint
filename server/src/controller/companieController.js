@@ -10,7 +10,7 @@ const createCompanyController = async (req, res, next) => {
         const { name, legalName, description, industryVertical, businessActivity, interestedIndustries } = req.body;
 
         // 2. Validate required fields
-        if (!name || !legalName || !description || !industryVertical || !businessActivity || !interestedIndustries) {
+        if (!name || !legalName || !description || !industryVertical) {
             return errorResponse(res, {
                 statusCode: 400,
                 message: "All required fields must be provided"
@@ -46,11 +46,11 @@ const createCompanyController = async (req, res, next) => {
             logoPublicId: uploadedLogo.publicId,
             description,
             industryVertical,
-            businessActivity,
-            interestedIndustries,
             createdBy: req.user._id,
 
             // Optional fields (if provided)
+            ...(req.body.businessActivity && { businessActivity : req.body.businessActivity }),
+            ...(req.body.interestedIndustries && { interestedIndustries: req.body.interestedIndustries}),
             ...(req.body.country && { country: req.body.country }),
             ...(req.body.address && { address: req.body.address }),
             ...(req.body.companyType && { companyType: req.body.companyType }),

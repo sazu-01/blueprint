@@ -1,9 +1,11 @@
 "use client";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
-import { FiX } from "react-icons/fi";
+import { FiX, FiChevronDown } from "react-icons/fi";
 import useAuthStore from '@/app/store/UseauthStore';
 import useCompanyStore from '@/app/store/UseCompanieStore';
+import { industries, businessActivities } from '@/app/lib/proposalType';
+
 
 const COMPANY_TYPES = [
   "Partnership",
@@ -49,24 +51,34 @@ const buildFormState = (company) => ({
   officialDomain: company?.officialDomain || "",
 });
 
-// Reusable tag-chip input for array fields (industryVertical, businessActivity, interestedIndustries)
-const TagInput = ({ label, values, onChange }) => {
-  const [input, setInput] = useState("");
 
-  const addTag = (e) => {
-    if ((e.key === "Enter" || e.key === ",") && input.trim()) {
-      e.preventDefault();
-      const value = input.trim();
-      if (!values.includes(value)) onChange([...values, value]);
-      setInput("");
+const MultiSelectDropdown = ({ label, options, values, onChange }) => {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const toggleOption = (option) => {
+    if (values.includes(option)) {
+      onChange(values.filter((v) => v !== option));
+    } else {
+      onChange([...values, option]);
     }
   };
 
   const removeTag = (value) => onChange(values.filter((v) => v !== value));
 
   return (
-    <div>
+    <div className="relative" ref={ref}>
       <label className="text-xs font-medium text-slate-500 mb-1.5 block">{label}</label>
+
+      {/* Selected tags */}
       <div className="flex flex-wrap gap-1.5 mb-2">
         {values.map((tag) => (
           <span key={tag} className="flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full bg-blue-50 text-blue-700 border border-blue-100">
@@ -77,17 +89,44 @@ const TagInput = ({ label, values, onChange }) => {
           </span>
         ))}
       </div>
-      <input
-        type="text"
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        onKeyDown={addTag}
-        placeholder="Type and press Enter or comma to add"
-        className="w-full text-sm text-slate-800 border border-[#dddcdc] rounded-lg px-3 py-2 outline-none focus:border-blue-300"
-      />
+
+      {/* Dropdown trigger */}
+      <button
+        type="button"
+        onClick={() => setOpen((prev) => !prev)}
+        className="w-full flex items-center justify-between text-sm text-slate-600 border border-[#dddcdc] rounded-lg px-3 py-2 outline-none focus:border-blue-300 cursor-pointer"
+      >
+        <span>{values.length > 0 ? `${values.length} selected` : "Select options"}</span>
+        <FiChevronDown className={`transition-transform ${open ? "rotate-180" : ""}`} size={16} />
+      </button>
+
+      {/* Dropdown panel */}
+      {open && (
+        <div className="absolute z-10 mt-1 w-full max-h-56 overflow-y-auto bg-white border border-[#dddcdc] rounded-lg shadow-lg py-1">
+          {options.map((option) => {
+            const checked = values.includes(option);
+            return (
+              <label
+                key={option}
+                className="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 cursor-pointer"
+              >
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  onChange={() => toggleOption(option)}
+                  className="accent-blue-600"
+                />
+                {option}
+              </label>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };
+
+
 
 const CompanyUpdatePage = () => {
 
@@ -250,22 +289,25 @@ const CompanyUpdatePage = () => {
               value={form.description}
               onChange={(e) => handleField("description", e.target.value)}
               rows={4}
-              className="w-full text-sm border border border-[#dddcdc] rounded-lg p-3 outline-none focus:border-blue-300 resize-none"
+              className="w-full text-sm border border-[#dddcdc] rounded-lg p-3 outline-none focus:border-blue-300 resize-none"
             />
           </div>
 
-          <TagInput
+          <MultiSelectDropdown
             label="Industry vertical"
+            options={industries}
             values={form.industryVertical}
             onChange={(v) => handleField("industryVertical", v)}
           />
-          <TagInput
+          <MultiSelectDropdown
             label="Business activity"
+            options={businessActivities}
             values={form.businessActivity}
             onChange={(v) => handleField("businessActivity", v)}
           />
-          <TagInput
+          <MultiSelectDropdown
             label="Interested industries"
+            options={industries}
             values={form.interestedIndustries}
             onChange={(v) => handleField("interestedIndustries", v)}
           />
