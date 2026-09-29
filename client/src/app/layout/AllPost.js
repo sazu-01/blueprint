@@ -47,13 +47,13 @@ const AllPost = () => {
 
 
   return (
-    <div className="grid grid-cols-12 gap-4 max-w-7xl mx-auto pb-16 mt-5 ">
-      <div className='col-span-12 lg:col-span-7 lg:ml-8 sm:m-6'>
+    <div className="grid grid-cols-12 gap-4 max-w-7xl mx-auto pb-24 lg: pb-16 mt-5 ">
+      <div className='col-span-12 lg:col-span-7  mx-3 sm:m-6 md:max-w-2xl md:mx-auto lg:max-w-none lg:mr-6 lg:ml-8'>
 
 
         <Link
           href={`/post`}
-          className="w-full flex items-center gap-3 bg-white border border-[#dddcdc] rounded-2xl px-5 py-4 mb-6 hover:border-blue-300 transition-colors text-left"
+          className="w-full flex items-center gap-3 bg-white border border-[#dddcdc] rounded-2xl px-4 py-3 sm:px-5 sm:py-4 mb-4 sm:mb-6 hover:border-blue-300 transition-colors text-left"
         >
           <Image
             src={myCompany?.logo || "/non_company_profile.png"}
@@ -62,8 +62,8 @@ const AllPost = () => {
             alt={myCompany?.name || "Your company"}
             className="rounded-lg object-cover w-9 h-9 border border-slate-100 shrink-0"
           />
-          <span className="text-sm text-slate-400">
-          What kind of partner or deal you're looking for
+          <span className="text-sm text-slate-400 min-w-0 truncate">
+            What kind of partner or deal you're looking for
           </span>
         </Link>
 
@@ -77,8 +77,8 @@ const AllPost = () => {
 
         {/* Error */}
         {error && (
-          <div className="flex h-[40vh] items-center justify-center">
-            <p className="text-red-600">{error}</p>
+          <div className="flex h-[40vh] items-center justify-center px-4 text-center">
+            <p className="text-red-600 break-words">{error}</p>
           </div>
         )}
 
@@ -92,14 +92,14 @@ const AllPost = () => {
         )}
 
         {/* Feed */}
-        <div className="space-y-4 ">
+        <div className="space-y-3 sm:space-y-4">
           {posts.map((post) => {
             const isMine = post.author?._id?.toString() === user?._id?.toString();
 
             return (
               <div
                 key={post._id}
-                className="rounded-2xl p-5 bg-white border border-[#dddcdc] rounded-lg overflow-hidden"
+                className="rounded-2xl p-4 sm:p-5 bg-white border border-[#dddcdc] rounded-lg overflow-hidden"
               >
                 {/* Header */}
                 <div className="flex items-start gap-3">
@@ -128,7 +128,7 @@ const AllPost = () => {
                     </div>
                   </div>
                   <span
-                    className={`text-xs font-medium px-2.5 py-1 rounded-full shrink-0 ${postTypeStyles[post.postType] || "bg-slate-100 text-slate-600"
+                    className={`text-xs font-medium px-2.5 py-1 rounded-full shrink-0 max-w-[40%] sm:max-w-none truncate ${postTypeStyles[post.postType] || "bg-slate-100 text-slate-600"
                       }`}
                   >
                     {post.postType}
@@ -136,7 +136,7 @@ const AllPost = () => {
                 </div>
 
                 {/* Content */}
-                <p className="text-sm text-slate-700 mt-3 whitespace-pre-wrap leading-relaxed">
+                <p className="text-sm text-slate-700 mt-3 whitespace-pre-wrap break-word leading-relaxed">
                   {post.content}
                 </p>
 
@@ -158,17 +158,17 @@ const AllPost = () => {
 
 
                 {/* */}
-<div className="flex items-center justify-end gap-2 mt-4">
+                <div className="flex items-center justify-end gap-2 mt-4">
 
 
-  <Link
-     href={`/proposal/new?legalName=${encodeURIComponent(post.company?.legalName || "")}`}
-    className="flex items-center gap-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 px-8 py-2 rounded-sm shadow-sm transition-colors"
-  >
-    <FaLocationArrow size={14} />
-    <span>Propose</span>
-  </Link>
-</div>
+                  <Link
+                    href={`/proposal/new?legalName=${encodeURIComponent(post.company?.legalName || "")}`}
+                    className="flex items-center gap-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 px-8 py-2 rounded-sm shadow-sm transition-colors"
+                  >
+                    <FaLocationArrow size={14} />
+                    <span>Propose</span>
+                  </Link>
+                </div>
 
                 { }
               </div>

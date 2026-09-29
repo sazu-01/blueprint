@@ -98,7 +98,7 @@ const handleSubmit = async (event) => {
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#f0f2f5] px-4 py-10 text-slate-900">
       <section className="grid w-full max-w-5xl items-center gap-10 md:grid-cols-[1fr_420px] md:gap-14">
-        <div className="mx-auto max-w-xl text-center md:mx-0 md:text-left xsm:hidden">
+        <div className="hidden md:block mx-auto max-w-xl text-center md:mx-0 md:text-left">
           <Image
             src="/reg_pg_img.png"
             alt="register page image"

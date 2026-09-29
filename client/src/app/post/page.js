@@ -127,7 +127,7 @@ const PostPage = ({ onSuccess, onCancel }) => {
   const error = formError || storeError;
 
   return (
-    <div className="bg-white border border-[#E4E7EC] rounded-xl shadow-[0_1px_2px_rgba(15,23,41,0.04)] p-6 sm:p-7">
+    <div className="bg-white w-full max-w-2xl mx-auto mt-8 border border-[#E4E7EC] rounded-xl shadow-[0_1px_2px_rgba(15,23,41,0.04)] p-6 sm:p-7">
       <form onSubmit={handleSubmit}>
 
         {/* Identity */}
