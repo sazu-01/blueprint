@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import useAuthStore from "@/app/store/UseauthStore";
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -23,6 +24,7 @@ const UserActivatePage = () => {
   const [otp, setOtp] = useState("");
   const [message, setMessage] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const login  = useAuthStore((state) => state.login);
 
   const route = useRouter();
 
@@ -78,13 +80,16 @@ const UserActivatePage = () => {
       if (!response.ok) {
         throw new Error(data.message || "Registration failed. Please try again.");
       }
+      
+      login(data.payload.user);
 
       setOtp("");
       setMessage({
         type: "success",
         text: data.message || "User registered successfully.",
       });
-      route.push(`/`);
+
+      route.replace('/');
     } catch (error) {
       setMessage({
         type: "error",
