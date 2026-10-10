@@ -2,7 +2,7 @@
 import Proposal from "../model/proposalModel.js";
 import Company from "../model/comanieModel.js";
 import { successResponse, errorResponse } from "../helpers/response.js";
-import { UploadBufferToCloudinary } from "../helpers/Cloudinary.js";
+import { UploadBufferToR2, GetR2SignedUrl } from "../helpers/R2.js";
 import ProposalText from "../model/proposalTextModel.js";
 
 
@@ -75,11 +75,12 @@ const CreateProposal = async (req, res, next) => {
         }
         
         //upload file if attached
-        let fileUrl, filePublicId;
+        let fileKey;
         if (req.file) {
-            const uploadResult = await UploadBufferToCloudinary(req.file.buffer, "blueprint/proposals", "raw", req.file.originalname);
-            fileUrl = uploadResult.secureUrl;
-            filePublicId = uploadResult.publicId;
+        const { key } = await UploadBufferToR2(req.file.buffer,`proposals/${fromCompany}`,
+        req.file.originalname,req.file.mimetype
+        );
+        fileKey = key; 
         } 
 
         let proposal;
@@ -107,7 +108,7 @@ const CreateProposal = async (req, res, next) => {
             senderCompany: fromCompany,
             senderUser: userId,
             text: text?.trim() || "",
-            ...(fileUrl && { file : fileUrl, filePublicId}),
+            ...(fileKey && { fileKey }),
         });
 
         return successResponse(res, {
@@ -125,6 +126,8 @@ const CreateProposal = async (req, res, next) => {
 const GetProposalById = async (req, res, next) => {
     try {
         const { id } = req.params;
+        const userId = req.user._id;
+
         const proposal = await Proposal.findById(id)
             .populate("fromCompany", "name legalName logo")
             .populate("toCompany", "name legalName logo")
@@ -134,16 +137,43 @@ const GetProposalById = async (req, res, next) => {
             return errorResponse(res, { statusCode: 404, message: "Proposal not found" });
         }
 
+
+
+        // only sender or receiver company people can see this proposal
+        const [isSender, isReceiver] = await Promise.all([
+            isCompanyMember(proposal.fromCompany._id, userId),
+            isCompanyMember(proposal.toCompany._id, userId),
+        ]);
+        if (!isSender && !isReceiver) {
+            return errorResponse(res, {
+                statusCode: 403,
+                message: "You are not authorized to view this proposal",
+            });
+        }
+
+
          // Always include the thread so the detail page has everything in one call
         const texts = await ProposalText.find({ proposal: id })
             .sort({ createdAt: 1 })
             .populate("senderCompany", "name legalName logo")
             .populate("senderUser", "name email");
 
+
+        // R2 ফাইলের জন্য signed URL বসিয়ে দেওয়া; frontend আগের মতোই `file` ফিল্ড পাবে
+        const textsWithUrls = await Promise.all(
+            texts.map(async (t) => {
+                const obj = t.toObject();
+                if (obj.fileKey) {
+                    obj.file = await GetR2SignedUrl(obj.fileKey);
+                }
+                return obj;
+            })
+        );   
+
         return successResponse(res, {
             statusCode: 200,
             message: "Proposal fetched successfully",
-            payload: { proposal, texts },
+            payload: { proposal, texts:textsWithUrls },
         });
     } catch (error) {
         next(error);

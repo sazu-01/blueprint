@@ -30,6 +30,10 @@ const ProposalTextSchema = new Schema({
     filePublicId: {
         type: String,
     },
+
+    fileKey: {
+         type: String 
+    },
     
 }, { timestamps: true });
 

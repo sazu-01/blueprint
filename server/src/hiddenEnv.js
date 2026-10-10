@@ -16,6 +16,11 @@ const BREVO_API_KEY=process.env.BREVO_API_KEY;
 const CLOUDE_NAME= process.env.CLOUDE_NAME;
 const CLOUDE_API_KEY=process.env.CLOUDE_API_KEY;
 const CLOUDE_API_SECRET=process.env.CLOUDE_API_SECRET;
+const R2_BUCKET=process.env.R2_BUCKET;
+const R2_ACCOUNT_ID=process.env.R2_ACCOUNT_ID;
+const R2_ACCESS_KEY_ID=process.env.R2_ACCESS_KEY_ID;
+const R2_SECRET_ACCESS_KEY=process.env.R2_SECRET_ACCESS_KEY;
+
 
 export {
     MongodbURL,
@@ -30,5 +35,9 @@ export {
     BREVO_API_KEY,
     CLOUDE_NAME,
     CLOUDE_API_KEY,
-    CLOUDE_API_SECRET
+    CLOUDE_API_SECRET,
+    R2_BUCKET,
+    R2_ACCOUNT_ID,
+    R2_ACCESS_KEY_ID,
+    R2_SECRET_ACCESS_KEY
 }
