@@ -8,6 +8,9 @@ const companieSchema = new Schema({
         type: String,
         required: true,
     },
+    logo: {
+        type: String,
+    },
     legalName: {
         type: String,
         required: true,
@@ -28,8 +31,8 @@ const companieSchema = new Schema({
     },
     
     // OPTIONAL FIELDS
-    logo: {
-        type: String,
+    slogan: {
+        type: String
     },
     publicId:{
         type: String,

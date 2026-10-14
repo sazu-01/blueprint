@@ -18,8 +18,8 @@ const COMPANY_TYPES = [
   "Self Owned",
 ];
 
-const REQUIRED_FIELDS = ["name", "legalName", "description", "industryVertical", "businessActivity", "interestedIndustries"];
-const OPTIONAL_FIELDS = ["country", "address", "companyType", "webLink", "companySize", "foundedYear", "fundingStaged", "officialDomain"];
+const REQUIRED_FIELDS = ["name", "legalName", "description"];
+const OPTIONAL_FIELDS = ["industryVertical", "businessActivity", "interestedIndustries", "slogan", "country", "address", "companyType", "webLink", "companySize", "foundedYear", "fundingStaged", "officialDomain"];
 
 const parseTagArray = (value) => {
     if (!Array.isArray(value)) return [];
@@ -41,6 +41,7 @@ const buildFormState = (company) => ({
   industryVertical: parseTagArray(company?.industryVertical) || [],
   businessActivity: parseTagArray(company?.businessActivity) || [],
   interestedIndustries: parseTagArray(company?.interestedIndustries) || [],
+  slogan: company?.slogan || "",
   country: company?.country || "",
   address: company?.address || "",
   companyType: company?.companyType || "",
@@ -183,14 +184,14 @@ const CompanyUpdatePage = () => {
   const handleUpdate = async () => {
     setFormError("");
 
-    if (!form.name.trim() || !form.legalName.trim() || !form.description.trim()) {
-      setFormError("Name, legal name, and description are required.");
+    if (!form.name.trim() || !form.legalName.trim() || !form.description.trim() || form.industryVertical.length === 0 ) {
+      setFormError("Name, legal name, Industry Vertical, description are required.");
       return;
     }
-    if (form.industryVertical.length === 0 || form.businessActivity.length === 0 || form.interestedIndustries.length === 0) {
-      setFormError("Industry vertical, business activity, and interested industries are required.");
-      return;
-    }
+    // if (form.businessActivity.length === 0 || form.interestedIndustries.length === 0) {
+    //   setFormError("Industry vertical, business activity, and interested industries are required.");
+    //   return;
+    // }
 
     const formData = new FormData();
     [...REQUIRED_FIELDS, ...OPTIONAL_FIELDS].forEach((key) => {
@@ -318,6 +319,15 @@ const CompanyUpdatePage = () => {
           <p className="text-xs font-semibold text-slate-500 uppercase">Optional</p>
 
           <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-xs font-medium text-slate-500 mb-1.5 block">Slogan</label>
+              <input
+                type="text"
+                value={form.slogan}
+                onChange={(e) => handleField("slogan", e.target.value)}
+                className="w-full text-sm border border-[#dddcdc] rounded-lg px-3 py-2 outline-none focus:border-blue-300"
+              />
+            </div>
             <div>
               <label className="text-xs font-medium text-slate-500 mb-1.5 block">Country</label>
               <input

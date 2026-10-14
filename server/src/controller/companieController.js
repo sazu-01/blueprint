@@ -7,7 +7,7 @@ import { UploadBufferToCloudinary } from "../helpers/Cloudinary.js";
 const createCompanyController = async (req, res, next) => {
     try {
         // 1. Extract required fields
-        const { name, legalName, description, industryVertical, businessActivity, interestedIndustries } = req.body;
+        const { name, legalName, description, industryVertical, slogan } = req.body;
 
         // 2. Validate required fields
         if (!name || !legalName || !description || !industryVertical) {
@@ -51,6 +51,7 @@ const createCompanyController = async (req, res, next) => {
             // Optional fields (if provided)
             ...(req.body.businessActivity && { businessActivity : req.body.businessActivity }),
             ...(req.body.interestedIndustries && { interestedIndustries: req.body.interestedIndustries}),
+            ...(req.body.slogan && {slogan: req.body.slogan}),
             ...(req.body.country && { country: req.body.country }),
             ...(req.body.address && { address: req.body.address }),
             ...(req.body.companyType && { companyType: req.body.companyType }),
@@ -188,6 +189,7 @@ const UpdateCompanyController = async (req, res, next) => {
             industryVertical,
             businessActivity,
             interestedIndustries,
+            slogan,
             country,
             address,
             companyType,
@@ -237,6 +239,7 @@ const UpdateCompanyController = async (req, res, next) => {
         if (interestedIndustries !== undefined) company.interestedIndustries = interestedIndustries;
 
         // Optional fields
+        if (slogan !== undefined) company.slogan = slogan;
         if (country !== undefined) company.country = country;
         if (address !== undefined) company.address = address;
         if (companyType !== undefined) company.companyType = companyType;

@@ -333,7 +333,7 @@ const ProposalDetailPage = () => {
                   onChange={(e) => setReplyText(e.target.value)}
                   rows={3}
                   placeholder={`Reply as ${myCompany?.name || "your company"}...`}
-                  className="w-full text-sm border border-slate-200 rounded-xl p-3 bg-white outline-none focus:border-blue-300 resize-none"
+                  className="w-full h-[180px] text-sm  rounded-xl p-3 bg-white outline-none focus:border-blue-300 resize-none"
                 />
 
                 {/* File attachment on reply */}

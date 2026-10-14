@@ -105,7 +105,6 @@ const CompanyRegisterPage = () => {
     const companyData = new FormData();
 
     companyData.append("logo", formData.logo);
-
     companyData.append("name", formData.name);
     companyData.append("legalName", formData.legalName);
     companyData.append("description", formData.description);
